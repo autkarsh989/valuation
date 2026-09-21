@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20-Company Valuation & Classification System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .badge-strongly-undervalued { background-color: #15803d; color: white; }
+        .badge-undervalued { background-color: #22c55e; color: white; }
+        .badge-fairly-valued { background-color: #3b82f6; color: white; }
+        .badge-overvalued { background-color: #f97316; color: white; }
+        .badge-strongly-overvalued { background-color: #dc2626; color: white; }
+        .badge-inconclusive { background-color: #d97706; color: white; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+
+    <!-- Top Header -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white">Company Valuation & Data Engine</h1>
+                    <p class="text-xs text-slate-400">Practical 20-Company Research Beta • Live Exchange Data Sync</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="refreshAllData()" id="refreshAllBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 shadow-md">
+                    <i class="fa-solid fa-rotate text-xs"></i>
+                    <span>Refresh All Live Data</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Universe</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="kpiTotal" class="text-2xl font-extrabold text-white">20</span>
+                    <span class="text-xs text-indigo-400 font-medium">Companies</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Undervalued</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="kpiUndervalued" class="text-2xl font-extrabold text-emerald-400">0</span>
+                    <i class="fa-solid fa-arrow-trend-up text-emerald-400 text-sm"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider">Fairly Valued</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="kpiFair" class="text-2xl font-extrabold text-blue-400">0</span>
+                    <i class="fa-solid fa-scale-balanced text-blue-400 text-sm"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Overvalued</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="kpiOvervalued" class="text-2xl font-extrabold text-rose-400">0</span>
+                    <i class="fa-solid fa-arrow-trend-down text-rose-400 text-sm"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Inconclusive</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="kpiInconclusive" class="text-2xl font-extrabold text-amber-400">0</span>
+                    <i class="fa-solid fa-circle-question text-amber-400 text-sm"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Data Freshness</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="kpiFreshness" class="text-sm font-bold text-emerald-400">100% Live</span>
+                    <i class="fa-solid fa-bolt text-emerald-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="flex-1 w-full md:w-auto relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+                <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search ticker or company name..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div>
+                    <select id="sectorFilter" onchange="applyFilters()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="All">All Sector Packs (6)</option>
+                        <option value="Banks & NBFCs">Banks & NBFCs</option>
+                        <option value="IT Services">IT Services</option>
+                        <option value="FMCG / Consumer">FMCG / Consumer</option>
+                        <option value="Manufacturing / Auto">Manufacturing / Auto</option>
+                        <option value="Infrastructure / EPC">Infrastructure / EPC</option>
+                        <option value="Pharmaceuticals">Pharmaceuticals</option>
+                    </select>
+                </div>
+
+                <div>
+                    <select id="statusFilter" onchange="applyFilters()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="All">All Classifications</option>
+                        <option value="STRONGLY UNDERVALUED">Strongly Undervalued</option>
+                        <option value="UNDERVALUED">Undervalued</option>
+                        <option value="FAIRLY VALUED">Fairly Valued</option>
+                        <option value="OVERVALUED">Overvalued</option>
+                        <option value="STRONGLY OVERVALUED">Strongly Overvalued</option>
+                        <option value="INCONCLUSIVE">Inconclusive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 20-Company Grid -->
+        <div id="companyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Company Cards -->
+        </div>
+
+    </main>
+
+    <!-- Detail Drawer Modal -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-slate-900 border-l border-slate-800 w-full max-w-4xl h-full overflow-y-auto p-6 flex flex-col space-y-6 shadow-2xl">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center space-x-3">
+                        <h2 id="modalTitle" class="text-2xl font-bold text-white">Company Name</h2>
+                        <span id="modalSymbol" class="bg-slate-800 text-indigo-400 font-mono text-sm px-2.5 py-1 rounded-md">SYMBOL.NS</span>
+                        <span id="modalStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-bold">STATUS</span>
+                    </div>
+                    <p id="modalSector" class="text-xs text-slate-400 mt-1">Sector Pack • Subsector</p>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Payload -->
+            <div id="modalBody" class="space-y-6 flex-1">
+                <!-- Dynamically Populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let allCompanies = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadCompanies();
+        });
+
+        async function loadCompanies() {
+            try {
+                const res = await fetch("/api/companies");
+                const data = await res.json();
+                allCompanies = data.companies || [];
+                updateKPIs(data.stats || {});
+                renderGrid(allCompanies);
+            } catch (err) {
+                console.error("Error loading company list:", err);
+            }
+        }
+
+        function updateKPIs(stats) {
+            document.getElementById("kpiTotal").innerText = stats.total || 20;
+            document.getElementById("kpiUndervalued").innerText = stats.undervalued || 0;
+            document.getElementById("kpiFair").innerText = stats.fairly_valued || 0;
+            document.getElementById("kpiOvervalued").innerText = stats.overvalued || 0;
+            document.getElementById("kpiInconclusive").innerText = stats.inconclusive || 0;
+        }
+
+        function renderGrid(companies) {
+            const grid = document.getElementById("companyGrid");
+            grid.innerHTML = "";
+
+            if (companies.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">No companies found matching filters.</div>`;
+                return;
+            }
+
+            companies.forEach(c => {
+                const price = c.close_price ? `₹${c.close_price.toLocaleString('en-IN')}` : '₹--';
+                const median = c.q50 ? `₹${c.q50.toLocaleString('en-IN')}` : '₹--';
+                const mispricing = (c.mispricing !== undefined && c.mispricing !== null) ? `${(c.mispricing * 100).toFixed(1)}%` : '0%';
+                const conf = c.confidence_score ? `${c.confidence_score}/100` : '--';
+                const badgeClass = getBadgeClass(c.classification);
+
+                const card = document.createElement("div");
+                card.className = "bg-slate-800 border border-slate-700/80 hover:border-indigo-500/50 rounded-xl p-5 shadow-lg transition-all flex flex-col justify-between space-y-4";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span class="text-xs font-mono font-semibold text-indigo-400">${c.company_id}</span>
+                                <h3 class="text-base font-bold text-white mt-0.5">${c.common_name}</h3>
+                                <span class="text-xs text-slate-400">${c.sector} • ${c.market_cap_class}</span>
+                            </div>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full ${badgeClass}">${c.classification || 'PENDING'}</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-700/60 bg-slate-900/50 p-3 rounded-lg">
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Live Price</span>
+                                <span class="text-sm font-extrabold text-white">${price}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Fair Value (Q50)</span>
+                                <span class="text-sm font-extrabold text-indigo-300">${median}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Mispricing</span>
+                                <span class="text-xs font-bold ${c.mispricing >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${mispricing}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Confidence</span>
+                                <span class="text-xs font-bold text-slate-200">${conf}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="openDetail('${c.company_id}')" class="w-full bg-slate-700 hover:bg-indigo-600 text-white text-xs font-semibold py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                        <span>View Valuation Detail</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function getBadgeClass(status) {
+            switch (status) {
+                case 'STRONGLY UNDERVALUED': return 'badge-strongly-undervalued';
+                case 'UNDERVALUED': return 'badge-undervalued';
+                case 'FAIRLY VALUED': return 'badge-fairly-valued';
+                case 'OVERVALUED': return 'badge-overvalued';
+                case 'STRONGLY OVERVALUED': return 'badge-strongly-overvalued';
+                case 'INCONCLUSIVE': return 'badge-inconclusive';
+                default: return 'bg-slate-700 text-slate-300';
+            }
+        }
+
+        function applyFilters() {
+            const search = document.getElementById("searchInput").value.toLowerCase();
+            const sector = document.getElementById("sectorFilter").value;
+            const status = document.getElementById("statusFilter").value;
+
+            let filtered = allCompanies.filter(c => {
+                const matchSearch = !search || c.company_id.toLowerCase().includes(search) || c.common_name.toLowerCase().includes(search);
+                const matchSector = sector === "All" || c.sector === sector;
+                const matchStatus = status === "All" || c.classification === status;
+                return matchSearch && matchSector && matchStatus;
+            });
+
+            renderGrid(filtered);
+        }
+
+        async function openDetail(symbol) {
+            const modal = document.getElementById("detailModal");
+            const modalBody = document.getElementById("modalBody");
+            modal.classList.remove("hidden");
+
+            modalBody.innerHTML = `<div class="flex justify-center py-24"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-indigo-500"></i></div>`;
+
+            try {
+                const res = await fetch(`/api/company/${symbol}`);
+                const data = await res.json();
+                renderDetailModal(data);
+            } catch (err) {
+                modalBody.innerHTML = `<div class="text-rose-400 text-center py-12">Failed to load company valuation details.</div>`;
+            }
+        }
+
+        function renderDetailModal(data) {
+            const master = data.company || {};
+            const market = data.market || {};
+            const val = data.valuation || {};
+            const elig = data.classification_layers || {};
+            const scenarios = data.scenarios || {};
+            const sensitivity = data.sensitivity || {};
+
+            document.getElementById("modalTitle").innerText = master.common_name || master.legal_name;
+            document.getElementById("modalSymbol").innerText = master.company_id;
+            document.getElementById("modalSector").innerText = `${master.sector} • ${master.subsector}`;
+
+            const badge = document.getElementById("modalStatusBadge");
+            badge.innerText = val.classification || "PENDING";
+            badge.className = `text-xs px-2.5 py-1 rounded-full font-bold ${getBadgeClass(val.classification)}`;
+
+            const modalBody = document.getElementById("modalBody");
+            modalBody.innerHTML = `
+                <!-- Action bar -->
+                <div class="flex items-center justify-between bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                    <div>
+                        <span class="text-xs text-slate-400 block">Live Price (NSE)</span>
+                        <span class="text-2xl font-extrabold text-white">₹${(market.close_price || 0).toLocaleString('en-IN')}</span>
+                        <span class="text-xs text-slate-400 block mt-0.5">Market Cap: ₹${((market.market_cap || 0)/10000000).toFixed(0)} Cr</span>
+                    </div>
+                    <button onclick="refreshSingleCompany('${master.company_id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center space-x-2">
+                        <i class="fa-solid fa-sync text-xs"></i>
+                        <span>Fetch Live Data & Update</span>
+                    </button>
+                </div>
+
+                <!-- Quantile Distribution Bar -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center justify-between">
+                        <span>Fair Value Distribution (Quantiles)</span>
+                        <span class="text-xs font-normal text-indigo-400">Confidence: ${val.confidence_score || 80}/100</span>
+                    </h3>
+                    <div class="grid grid-cols-5 gap-2 text-center pt-2">
+                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[10px] text-slate-400 block">Q10 (Bear)</span>
+                            <span class="text-sm font-bold text-slate-300">₹${val.q10 || '--'}</span>
+                        </div>
+                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[10px] text-slate-400 block">Q25</span>
+                            <span class="text-sm font-bold text-slate-300">₹${val.q25 || '--'}</span>
+                        </div>
+                        <div class="bg-indigo-950/80 p-2.5 rounded-lg border border-indigo-500/60">
+                            <span class="text-[10px] text-indigo-300 block font-bold">Q50 (Median)</span>
+                            <span class="text-base font-extrabold text-indigo-200">₹${val.q50 || '--'}</span>
+                        </div>
+                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[10px] text-slate-400 block">Q75</span>
+                            <span class="text-sm font-bold text-slate-300">₹${val.q75 || '--'}</span>
+                        </div>
+                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700">
+                            <span class="text-[10px] text-slate-400 block">Q90 (Bull)</span>
+                            <span class="text-sm font-bold text-slate-300">₹${val.q90 || '--'}</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 italic pt-1">${val.rationale || ''}</p>
+                </div>
+
+                <!-- Layer B Attributes & Veto Explanations -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Layer B Internal Attributes</h4>
+                        <ul class="text-xs space-y-1.5 text-slate-300 pt-1">
+                            <li><strong class="text-slate-400">Financial Nature:</strong> ${elig.layer_b?.financial_nature || '--'}</li>
+                            <li><strong class="text-slate-400">Lifecycle:</strong> ${elig.layer_b?.lifecycle || '--'}</li>
+                            <li><strong class="text-slate-400">Business Model:</strong> ${elig.layer_b?.business_model || '--'}</li>
+                            <li><strong class="text-slate-400">Asset Intensity:</strong> ${elig.layer_b?.asset_intensity || '--'}</li>
+                            <li><strong class="text-slate-400">Regulatory Model:</strong> ${elig.layer_b?.regulatory_model || '--'}</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Method Eligibility & Vetoes</h4>
+                        <div class="space-y-2 text-xs pt-1">
+                            <div>
+                                <span class="text-emerald-400 font-bold block mb-1">Active Methods:</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    ${(data.eligible_methods || []).map(m => `<span class="bg-emerald-950 border border-emerald-700/60 text-emerald-300 px-2 py-0.5 rounded text-[11px] font-semibold">${m}</span>`).join('')}
+                                </div>
+                            </div>
+                            ${(data.vetoed_methods || []).length > 0 ? `
+                                <div class="mt-2 pt-2 border-t border-slate-700">
+                                    <span class="text-amber-400 font-bold block mb-1">Veto Notices:</span>
+                                    <ul class="space-y-1 text-slate-400 text-[11px]">
+                                        ${(data.vetoed_methods || []).map(v => `<li><span class="font-bold text-amber-300">${v.method}:</span> ${v.reason}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensitivity Matrix -->
+                ${sensitivity.matrix ? `
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">WACC vs Terminal Growth Sensitivity Matrix (DCF Share Price)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-center border-collapse">
+                            <thead>
+                                <tr class="bg-slate-900 text-slate-400">
+                                    <th class="p-2 border border-slate-700">WACC \\ g</th>
+                                    ${sensitivity.g_headers.map(g => `<th class="p-2 border border-slate-700">${g}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${sensitivity.wacc_headers.map((w, idx) => `
+                                    <tr>
+                                        <td class="p-2 border border-slate-700 bg-slate-900 text-slate-300 font-bold">${w}</td>
+                                        ${sensitivity.matrix[idx].map(val => `<td class="p-2 border border-slate-700 ${val === data.valuation?.q50 ? 'bg-indigo-900/60 font-bold text-indigo-200' : 'text-slate-300'}">₹${val}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById("detailModal").classList.add("hidden");
+        }
+
+        async function refreshSingleCompany(symbol) {
+            try {
+                const res = await fetch(`/api/company/${symbol}/refresh`, { method: "POST" });
+                const data = await res.json();
+                renderDetailModal(data.data);
+                loadCompanies();
+            } catch (err) {
+                alert("Failed to refresh company data");
+            }
+        }
+
+        async function refreshAllData() {
+            const btn = document.getElementById("refreshAllBtn");
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spin fa-circle-notch"></i> <span>Syncing 20 Companies...</span>`;
+
+            try {
+                await fetch("/api/refresh-all", { method: "POST" });
+                await loadCompanies();
+            } catch (err) {
+                alert("Bulk refresh failed");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-rotate text-xs"></i> <span>Refresh All Live Data</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
