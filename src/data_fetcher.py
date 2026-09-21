@@ -4,8 +4,15 @@ Fetches live market prices and actual reported financial statements using yfinan
 Performs point-in-time storage and staleness checking.
 """
 
-import yfinance as yf
-import pandas as pd
+try:
+    import yfinance as yf
+except ImportError:
+    yf = None
+
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 import math
 from datetime import datetime, timedelta
 from typing import Dict, Any, Tuple
@@ -72,6 +79,10 @@ def fetch_and_store_company_data(symbol: str, force_refresh: bool = False) -> Di
     if not force_refresh and not market_stale and not fin_stale:
         logger.info(f"Data for {symbol} is fresh. Skipping live yfinance network call.")
         return {"symbol": symbol, "status": "Fresh data used"}
+
+    if yf is None:
+        logger.warning(f"yfinance not installed. Using existing database record for {symbol}.")
+        return {"symbol": symbol, "status": "Using existing database record"}
 
     logger.info(f"Fetching live yfinance data for ticker: {symbol}")
     ticker = yf.Ticker(symbol)

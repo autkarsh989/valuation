@@ -1,0 +1,31 @@
+company_id,legal_name,sector,subsector,revenue_growth,operating_margin,roe,debt_to_equity,pe_ratio,pb_ratio,market_price,actual_fair_value
+HDFCBANK.NS,HDFC Bank Limited,Banks & NBFCs,Private Sector Bank,0.16,0.24,0.17,0.85,19.2,2.8,1720.50,1850.00
+ICICIBANK.NS,ICICI Bank Limited,Banks & NBFCs,Private Sector Bank,0.18,0.26,0.18,0.78,18.5,3.1,1265.80,1380.00
+SBIN.NS,State Bank of India,Banks & NBFCs,Public Sector Bank,0.14,0.20,0.16,0.92,10.8,1.4,785.40,890.00
+BAJFINANCE.NS,Bajaj Finance Limited,Banks & NBFCs,NBFC,0.25,0.30,0.21,1.15,31.2,5.2,7150.00,7800.00
+SHRIRAMFIN.NS,Shriram Finance Limited,Banks & NBFCs,NBFC - Commercial Vehicles,0.17,0.23,0.15,1.25,14.6,2.1,2890.00,3200.00
+KOTAKBANK.NS,Kotak Mahindra Bank,Banks & NBFCs,Private Sector Bank,0.15,0.25,0.15,0.70,21.5,3.2,1790.00,1950.00
+AXISBANK.NS,Axis Bank Limited,Banks & NBFCs,Private Sector Bank,0.17,0.24,0.17,0.82,14.2,2.0,1180.00,1320.00
+TCS.NS,Tata Consultancy Services Limited,IT Services,IT Consulting & Services,0.08,0.26,0.48,0.05,29.5,12.5,4150.00,4300.00
+INFY.NS,Infosys Limited,IT Services,IT Consulting & Services,0.07,0.22,0.32,0.08,27.8,8.2,1890.00,1980.00
+HCLTECH.NS,HCL Technologies Limited,IT Services,IT Consulting & Services,0.09,0.20,0.28,0.10,25.4,6.4,1780.00,1860.00
+WIPRO.NS,Wipro Limited,IT Services,IT Consulting & Services,0.04,0.16,0.18,0.12,21.0,3.2,530.00,560.00
+TECHM.NS,Tech Mahindra Limited,IT Services,IT Consulting & Services,0.06,0.14,0.15,0.11,35.0,4.5,1620.00,1690.00
+HINDUNILVR.NS,Hindustan Unilever Limited,FMCG / Consumer,Household & Personal Care,0.06,0.24,0.20,0.03,56.0,11.5,2740.00,2850.00
+ITC.NS,ITC Limited,FMCG / Consumer,Diversified Consumer Goods,0.10,0.37,0.28,0.01,27.5,7.8,495.00,530.00
+NESTLEIND.NS,Nestle India Limited,FMCG / Consumer,Packaged Foods,0.09,0.23,0.95,0.05,74.0,52.0,2480.00,2600.00
+BRITANNIA.NS,Britannia Industries Limited,FMCG / Consumer,Packaged Foods,0.09,0.18,0.52,0.65,58.0,22.0,5820.00,6100.00
+DABUR.NS,Dabur India Limited,FMCG / Consumer,Personal Care & Ayurveda,0.08,0.19,0.21,0.12,50.0,8.8,620.00,660.00
+MARUTI.NS,Maruti Suzuki India Limited,Manufacturing / Auto,Passenger Vehicles,0.14,0.12,0.17,0.02,26.5,4.3,12450.00,13500.00
+M&M.NS,Mahindra & Mahindra Limited,Manufacturing / Auto,Automotive & Farm Equipment,0.19,0.14,0.19,0.35,28.2,4.8,2980.00,3250.00
+EICHERMOT.NS,Eicher Motors Limited,Manufacturing / Auto,Two Wheelers & Commercial Vehicles,0.16,0.25,0.24,0.04,33.0,6.9,4850.00,5200.00
+BAJAJ-AUTO.NS,Bajaj Auto Limited,Manufacturing / Auto,Automotive - 2&3 Wheelers,0.21,0.20,0.26,0.02,32.5,8.5,11650.00,12400.00
+TATAMOTORS.NS,Tata Motors Limited,Manufacturing / Auto,Automotive OEM,0.18,0.13,0.22,0.85,12.5,3.2,960.00,1080.00
+LT.NS,Larsen & Toubro Limited,Infrastructure / EPC,Engineering & Construction,0.15,0.11,0.15,0.82,34.0,4.7,3580.00,3890.00
+KEC.NS,KEC International Limited,Infrastructure / EPC,Power T&D & EPC Infrastructure,0.16,0.06,0.10,1.10,38.0,3.6,920.00,1020.00
+GMRINFRA.NS,GMR Airports Infrastructure,Infrastructure / EPC,Airport Infrastructure,0.22,0.28,0.08,2.40,65.0,5.8,92.00,105.00
+SUNPHARMA.NS,Sun Pharmaceutical Industries Limited,Pharmaceuticals,Formulations & Specialty Pharma,0.11,0.27,0.16,0.06,37.0,5.6,1890.00,2020.00
+DRREDDY.NS,Dr. Reddy's Laboratories Limited,Pharmaceuticals,Generics & Biosimilars,0.12,0.26,0.20,0.05,21.5,3.8,6550.00,7100.00
+CIPLA.NS,Cipla Limited,Pharmaceuticals,Respiratory & Domestic Generics,0.10,0.24,0.17,0.04,27.0,4.2,1620.00,1740.00
+LUPIN.NS,Lupin Limited,Pharmaceuticals,Generics & API,0.15,0.18,0.14,0.28,36.0,4.1,2150.00,2300.00
+AUROPHARMA.NS,Aurobindo Pharma Limited,Pharmaceuticals,Formulations & API,0.13,0.19,0.15,0.18,22.0,3.0,1450.00,1580.00

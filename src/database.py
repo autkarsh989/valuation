@@ -201,6 +201,53 @@ def init_db():
     )
     """)
 
+    # 9. trained_weights (Stores Neural Network learned method weights per sector)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS trained_weights (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sector TEXT,
+        method TEXT,
+        weight REAL,
+        model_version TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(sector, method, model_version)
+    )
+    """)
+
+    # 10. training_runs (Stores training metadata, loss history, sample count)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS training_runs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        run_id TEXT UNIQUE,
+        num_samples INTEGER,
+        epochs INTEGER,
+        final_loss REAL,
+        metrics_json TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    # 11. model_valuation (Stores valuation using trained neural weights for /model-valuation)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS model_valuation (
+        company_id TEXT PRIMARY KEY,
+        as_of_date TEXT,
+        market_price REAL,
+        q10 REAL,
+        q25 REAL,
+        q50 REAL,
+        q75 REAL,
+        q90 REAL,
+        mispricing REAL,
+        classification TEXT,
+        confidence_score REAL,
+        status TEXT,
+        rationale TEXT,
+        weights_applied TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -420,3 +467,158 @@ def log_source(company_id: str, metric: str, value: float, period_end: str, sour
     """, (company_id, metric, value, period_end, source_type, reference))
     conn.commit()
     conn.close()
+
+# -------------------------------------------------------------------------
+# Neural Network Weights & Training Repository Methods
+# -------------------------------------------------------------------------
+
+def save_trained_weights(weights_by_sector: Dict[str, Dict[str, float]], model_version: str = "v1.0"):
+    """
+    Persists neural network calculated method weights per sector.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    for sector, method_dict in weights_by_sector.items():
+        for method, weight in method_dict.items():
+            cursor.execute("""
+            INSERT INTO trained_weights (sector, method, weight, model_version, updated_at)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(sector, method, model_version) DO UPDATE SET
+                weight=excluded.weight,
+                updated_at=CURRENT_TIMESTAMP
+            """, (sector, method, float(weight), model_version))
+    conn.commit()
+    conn.close()
+
+def get_latest_trained_weights(model_version: str = "v1.0") -> Dict[str, Dict[str, float]]:
+    """
+    Retrieves stored method weights per sector.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT sector, method, weight FROM trained_weights WHERE model_version = ?", (model_version,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    result: Dict[str, Dict[str, float]] = {}
+    for r in rows:
+        sec = r["sector"]
+        if sec not in result:
+            result[sec] = {}
+        result[sec][r["method"]] = float(r["weight"])
+    return result
+
+def save_training_run(run_id: str, num_samples: int, epochs: int, final_loss: float, metrics: Dict[str, Any]):
+    """
+    Saves metadata and loss tracking for a training session.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    INSERT INTO training_runs (run_id, num_samples, epochs, final_loss, metrics_json, created_at)
+    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(run_id) DO UPDATE SET
+        num_samples=excluded.num_samples,
+        epochs=excluded.epochs,
+        final_loss=excluded.final_loss,
+        metrics_json=excluded.metrics_json,
+        created_at=CURRENT_TIMESTAMP
+    """, (run_id, num_samples, epochs, float(final_loss), json.dumps(metrics)))
+    conn.commit()
+    conn.close()
+
+def get_latest_training_run() -> Optional[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM training_runs ORDER BY created_at DESC LIMIT 1")
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return None
+    d = dict(row)
+    if d.get("metrics_json"):
+        try:
+            d["metrics"] = json.loads(d["metrics_json"])
+        except Exception:
+            d["metrics"] = {}
+    return d
+
+def save_model_valuation(val: Dict[str, Any]):
+    """
+    Stores valuation computed specifically using Neural Network weights for the /model-valuation portal.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    INSERT INTO model_valuation (
+        company_id, as_of_date, market_price, q10, q25, q50, q75, q90, mispricing,
+        classification, confidence_score, status, rationale, weights_applied
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(company_id) DO UPDATE SET
+        as_of_date=excluded.as_of_date,
+        market_price=excluded.market_price,
+        q10=excluded.q10, q25=excluded.q25, q50=excluded.q50, q75=excluded.q75, q90=excluded.q90,
+        mispricing=excluded.mispricing, classification=excluded.classification,
+        confidence_score=excluded.confidence_score, status=excluded.status,
+        rationale=excluded.rationale, weights_applied=excluded.weights_applied,
+        updated_at=CURRENT_TIMESTAMP
+    """, (
+        val["company_id"], val["as_of_date"], val["market_price"],
+        val["q10"], val["q25"], val["q50"], val["q75"], val["q90"],
+        val["mispricing"], val["classification"], val["confidence_score"],
+        val["status"], val["rationale"],
+        json.dumps(val.get("weights_applied", {}))
+    ))
+    conn.commit()
+    conn.close()
+
+def get_all_model_company_summaries() -> List[Dict[str, Any]]:
+    """
+    Returns company summary list with valuations calculated from Neural Network weights.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT 
+        cm.company_id, cm.common_name, cm.sector, cm.market_cap_class, cm.financial_nature,
+        md.close_price, md.market_cap, md.pe_ratio, md.pb_ratio, md.fetched_at, md.is_stale,
+        mv.q10, mv.q25, mv.q50, mv.q75, mv.q90, mv.mispricing, mv.classification, mv.confidence_score, mv.status,
+        mv.weights_applied
+    FROM company_master cm
+    LEFT JOIN market_data md ON cm.company_id = md.company_id
+    LEFT JOIN model_valuation mv ON cm.company_id = mv.company_id
+    ORDER BY cm.sector, cm.common_name
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    results = []
+    for r in rows:
+        item = dict(r)
+        if item.get("weights_applied"):
+            try:
+                item["weights_applied"] = json.loads(item["weights_applied"])
+            except Exception:
+                item["weights_applied"] = {}
+        results.append(item)
+    return results
+
+def get_model_company_record(company_id: str) -> Dict[str, Any]:
+    """
+    Gets full company record with neural model valuation.
+    """
+    rec = get_company_full_record(company_id)
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM model_valuation WHERE company_id = ?", (company_id,))
+    mv = cursor.fetchone()
+    conn.close()
+    if mv:
+        mv_dict = dict(mv)
+        if mv_dict.get("weights_applied"):
+            try:
+                mv_dict["weights_applied"] = json.loads(mv_dict["weights_applied"])
+            except Exception:
+                mv_dict["weights_applied"] = {}
+        rec["valuation"] = mv_dict
+    return rec
+

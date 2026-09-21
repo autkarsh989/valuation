@@ -3,8 +3,13 @@ Test Suite for 20-Company Valuation MVP Engine.
 Verifies database creation, live data fetcher, veto rules, model accuracy, and ensemble engine.
 """
 
-import pytest
+try:
+    import pytest
+except ImportError:
+    pytest = None
 import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from src.database import init_db, get_connection, get_company_full_record
 from src.company_universe import COMPANIES_20, get_company_by_symbol
 from src.classification import resolve_classification_and_eligibility
@@ -65,4 +70,15 @@ def test_ensemble_classification():
     assert res["classification"] in ["UNDERVALUED", "STRONGLY UNDERVALUED"]
 
 if __name__ == "__main__":
-    pytest.main(["-v", __file__])
+    try:
+        import pytest
+        pytest.main(["-v", __file__])
+    except ImportError:
+        test_company_universe_count()
+        test_database_initialization()
+        test_bank_veto_rules()
+        test_it_services_eligibility()
+        test_dcf_calculator()
+        test_ensemble_classification()
+        print("All system tests passed successfully!")
+
