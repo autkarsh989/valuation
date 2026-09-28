@@ -3,53 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>20-Company Valuation & Classification System</title>
+    <title>Company Valuation OS</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .badge-strongly-undervalued { background-color: #15803d; color: white; }
-        .badge-undervalued { background-color: #22c55e; color: white; }
-        .badge-fairly-valued { background-color: #3b82f6; color: white; }
-        .badge-overvalued { background-color: #f97316; color: white; }
-        .badge-strongly-overvalued { background-color: #dc2626; color: white; }
-        .badge-inconclusive { background-color: #d97706; color: white; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .badge-strongly-undervalued { background-color: #15803d; color: white; border: 1px solid #22c55e; }
+        .badge-undervalued { background-color: #166534; color: #86efac; border: 1px solid #15803d; }
+        .badge-fairly-valued { background-color: #1e3a8a; color: #93c5fd; border: 1px solid #1d4ed8; }
+        .badge-overvalued { background-color: #9a3412; color: #ffedd5; border: 1px solid #ea580c; }
+        .badge-strongly-overvalued { background-color: #991b1b; color: white; border: 1px solid #dc2626; }
+        .badge-inconclusive { background-color: #78350f; color: #fde68a; border: 1px solid #d97706; }
+        .sector-pill-active { background-color: #4f46e5; color: white; border-color: #818cf8; font-weight: 700; box-shadow: 0 0 15px rgba(79, 70, 229, 0.4); }
+        .drawer-tab-active { border-bottom: 2px solid #818cf8; color: #ffffff; font-weight: 700; }
+        
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col antialiased">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Ambient Background Glows -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-indigo-900/15 blur-[140px] pointer-events-none rounded-full z-0"></div>
+    <div class="fixed bottom-0 right-0 w-96 h-96 bg-blue-900/10 blur-[140px] pointer-events-none rounded-full z-0"></div>
 
     <!-- Top Navigation Header -->
-    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-30 shadow-xl">
+    <header class="bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 sticky top-0 z-40 shadow-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-indigo-600 to-blue-500 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-900/30 flex items-center justify-center">
+            <div class="flex items-center space-x-3.5">
+                <div class="bg-gradient-to-tr from-indigo-600 via-blue-600 to-sky-500 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-900/40 flex items-center justify-center border border-indigo-400/30">
                     <i class="fa-solid fa-chart-line text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">Company Valuation & Data Engine</h1>
-                    <p class="text-xs text-slate-400 hidden sm:block">Practical 20-Company Universe • Real-Time Financial Sync</p>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-lg sm:text-xl font-black tracking-tight text-white">Company Valuation </h1>
+                        <span class="bg-indigo-950 text-indigo-300 border border-indigo-700/60 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase font-mono">20-Company Universe</span>
+                    </div>
+                    <p class="text-xs text-slate-400 hidden sm:block">Automated Valuation & Classification System • Real-Time NSE Sync</p>
                 </div>
             </div>
 
-            <!-- Page Navigation Tabs & Action Button -->
+            <!-- Page Navigation Tabs & Action Buttons -->
             <div class="flex items-center space-x-3">
-                <div class="flex items-center space-x-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
-                    <a href="/" class="bg-indigo-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md flex items-center space-x-1.5">
+                <div class="flex items-center space-x-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+                    <a href="/" class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow-md flex items-center space-x-1.5">
                         <i class="fa-solid fa-chart-line text-xs"></i>
                         <span>Standard Valuation</span>
                     </a>
-                    <a href="/model-valuation" class="text-slate-300 hover:text-white hover:bg-slate-700/60 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1.5">
+                    <a href="/model-valuation" class="text-slate-400 hover:text-white hover:bg-slate-900 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1.5">
                         <i class="fa-solid fa-robot text-xs text-purple-400"></i>
                         <span class="hidden md:inline">AI Model Valuation</span>
                     </a>
-                    <a href="/train" class="text-slate-300 hover:text-white hover:bg-slate-700/60 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1.5">
+                    <a href="/train" class="text-slate-400 hover:text-white hover:bg-slate-900 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1.5">
                         <i class="fa-solid fa-graduation-cap text-xs"></i>
                         <span class="hidden md:inline">Model Training</span>
                     </a>
                 </div>
 
-                <button onclick="refreshAllData()" id="refreshAllBtn" class="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl transition-all flex items-center space-x-2 shadow-lg shadow-indigo-950/40">
+                <button onclick="refreshAllData()" id="refreshAllBtn" class="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-xl transition-all flex items-center space-x-2 shadow-lg shadow-indigo-950/50 border border-indigo-400/30">
                     <i class="fa-solid fa-rotate text-xs"></i>
                     <span class="hidden sm:inline">Refresh All Live Data</span>
                 </button>
@@ -58,127 +83,291 @@
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 z-10">
 
-        <!-- KPI Summary Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-slate-700 transition-colors">
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Universe</span>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span id="kpiTotal" class="text-2xl font-black text-white">20</span>
-                    <span class="text-xs text-indigo-400 font-medium">Companies</span>
+        <!-- Top Overview & Analytics Bar -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <!-- Left: Quick KPI Cards (Interactive Filter Chips) -->
+            <div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                <!-- Total -->
+                <div onclick="setClassificationFilter('All')" class="bg-slate-900/90 border border-slate-800/90 hover:border-indigo-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg cursor-pointer transition-all hover:scale-[1.02] group">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Total Universe</span>
+                        <i class="fa-solid fa-building text-slate-500 text-xs group-hover:text-indigo-400 transition-colors"></i>
+                    </div>
+                    <div class="mt-2">
+                        <span id="kpiTotal" class="text-2xl font-black text-white">20</span>
+                        <span class="text-[10px] text-indigo-400 font-semibold block mt-0.5">Click to view all</span>
+                    </div>
+                </div>
+
+                <!-- Undervalued -->
+                <div onclick="setClassificationFilter('UNDERVALUED')" class="bg-slate-900/90 border border-slate-800/90 hover:border-emerald-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg cursor-pointer transition-all hover:scale-[1.02] group">
+                    <div class="flex items-center justify-between text-emerald-400">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Undervalued</span>
+                        <i class="fa-solid fa-arrow-trend-up text-xs group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div class="mt-2">
+                        <span id="kpiUndervalued" class="text-2xl font-black text-emerald-400">0</span>
+                        <div class="w-full bg-slate-950 rounded-full h-1 mt-1.5 overflow-hidden">
+                            <div id="barUndervalued" class="bg-emerald-500 h-1 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fairly Valued -->
+                <div onclick="setClassificationFilter('FAIRLY VALUED')" class="bg-slate-900/90 border border-slate-800/90 hover:border-blue-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg cursor-pointer transition-all hover:scale-[1.02] group">
+                    <div class="flex items-center justify-between text-blue-400">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Fairly Valued</span>
+                        <i class="fa-solid fa-scale-balanced text-xs group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div class="mt-2">
+                        <span id="kpiFair" class="text-2xl font-black text-blue-400">0</span>
+                        <div class="w-full bg-slate-950 rounded-full h-1 mt-1.5 overflow-hidden">
+                            <div id="barFair" class="bg-blue-500 h-1 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overvalued -->
+                <div onclick="setClassificationFilter('OVERVALUED')" class="bg-slate-900/90 border border-slate-800/90 hover:border-rose-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg cursor-pointer transition-all hover:scale-[1.02] group">
+                    <div class="flex items-center justify-between text-rose-400">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Overvalued</span>
+                        <i class="fa-solid fa-arrow-trend-down text-xs group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div class="mt-2">
+                        <span id="kpiOvervalued" class="text-2xl font-black text-rose-400">0</span>
+                        <div class="w-full bg-slate-950 rounded-full h-1 mt-1.5 overflow-hidden">
+                            <div id="barOvervalued" class="bg-rose-500 h-1 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inconclusive -->
+                <div onclick="setClassificationFilter('INCONCLUSIVE')" class="bg-slate-900/90 border border-slate-800/90 hover:border-amber-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg cursor-pointer transition-all hover:scale-[1.02]">
+                    <div class="flex items-center justify-between text-amber-400">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Inconclusive</span>
+                        <i class="fa-solid fa-circle-question text-xs"></i>
+                    </div>
+                    <div class="mt-2">
+                        <span id="kpiInconclusive" class="text-2xl font-black text-amber-400">0</span>
+                        <span class="text-[10px] text-amber-400/80 font-semibold block mt-0.5">High Disagreement</span>
+                    </div>
+                </div>
+
+                <!-- System Live Feed Indicator -->
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/60 border border-indigo-800/40 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Data Freshness</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="text-xs font-bold text-emerald-400 flex items-center space-x-1">
+                            <i class="fa-solid fa-bolt text-xs"></i>
+                            <span>100% Verified Sync</span>
+                        </span>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">Point-In-Time SQLite Store</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-emerald-800/40 transition-colors">
-                <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">Undervalued</span>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span id="kpiUndervalued" class="text-2xl font-black text-emerald-400">0</span>
-                    <i class="fa-solid fa-arrow-trend-up text-emerald-400 text-sm"></i>
+            <!-- Right: Sector Breakdown Chart Widget -->
+            <div class="lg:col-span-4 bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 shadow-lg flex flex-col justify-between">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-800/80">
+                    <h3 class="text-xs font-extrabold text-slate-300 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i class="fa-solid fa-chart-pie text-indigo-400"></i>
+                        <span>Sector Valuation Distribution</span>
+                    </h3>
+                    <span class="text-[10px] font-mono text-slate-400">6 Sectors</span>
                 </div>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-blue-800/40 transition-colors">
-                <span class="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">Fairly Valued</span>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span id="kpiFair" class="text-2xl font-black text-blue-400">0</span>
-                    <i class="fa-solid fa-scale-balanced text-blue-400 text-sm"></i>
-                </div>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-rose-800/40 transition-colors">
-                <span class="text-[11px] font-semibold text-rose-400 uppercase tracking-wider">Overvalued</span>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span id="kpiOvervalued" class="text-2xl font-black text-rose-400">0</span>
-                    <i class="fa-solid fa-arrow-trend-down text-rose-400 text-sm"></i>
-                </div>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-amber-800/40 transition-colors">
-                <span class="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">Inconclusive</span>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span id="kpiInconclusive" class="text-2xl font-black text-amber-400">0</span>
-                    <i class="fa-solid fa-circle-question text-amber-400 text-sm"></i>
-                </div>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-md hover:border-emerald-800/40 transition-colors">
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Data Freshness</span>
-                <div class="flex items-baseline justify-between mt-2">
-                    <span id="kpiFreshness" class="text-xs font-bold text-emerald-400">100% Live</span>
-                    <i class="fa-solid fa-bolt text-emerald-400 text-sm"></i>
+                <div class="h-32 flex items-center justify-center relative mt-2">
+                    <canvas id="sectorChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Filter & Search Controls -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between shadow-md">
-            <div class="flex-1 w-full md:w-auto relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search ticker symbol or company name..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
+        <!-- Toolbar: Sector Quick Pills + Search + Sort + View Mode Switcher -->
+        <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 space-y-4 shadow-xl">
+            <!-- Sector Quick Filter Pills -->
+            <div class="flex items-center space-x-2 overflow-x-auto pb-1 text-xs font-medium scrollbar-none">
+                <span class="text-slate-400 font-bold uppercase text-[10px] tracking-wider shrink-0 mr-1">Sector Packs:</span>
+                <button onclick="setSectorFilter('All')" id="pill-All" class="sector-pill sector-pill-active px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5">
+                    <span>All Sectors</span>
+                    <span id="cnt-All" class="bg-indigo-950 text-indigo-200 text-[10px] font-mono px-1.5 py-0.2 rounded">20</span>
+                </button>
+                <button onclick="setSectorFilter('Banks & NBFCs')" id="pill-Banks & NBFCs" class="sector-pill bg-slate-950 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5">
+                    <span>Banks & NBFCs</span>
+                    <span id="cnt-Banks & NBFCs" class="bg-slate-900 text-slate-400 text-[10px] font-mono px-1.5 py-0.2 rounded">4</span>
+                </button>
+                <button onclick="setSectorFilter('IT Services')" id="pill-IT Services" class="sector-pill bg-slate-950 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5">
+                    <span>IT Services</span>
+                    <span id="cnt-IT Services" class="bg-slate-900 text-slate-400 text-[10px] font-mono px-1.5 py-0.2 rounded">4</span>
+                </button>
+                <button onclick="setSectorFilter('FMCG / Consumer')" id="pill-FMCG / Consumer" class="sector-pill bg-slate-950 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5">
+                    <span>FMCG / Consumer</span>
+                    <span id="cnt-FMCG / Consumer" class="bg-slate-900 text-slate-400 text-[10px] font-mono px-1.5 py-0.2 rounded">4</span>
+                </button>
+                <button onclick="setSectorFilter('Manufacturing / Auto')" id="pill-Manufacturing / Auto" class="sector-pill bg-slate-950 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5">
+                    <span>Manufacturing / Auto</span>
+                    <span id="cnt-Manufacturing / Auto" class="bg-slate-900 text-slate-400 text-[10px] font-mono px-1.5 py-0.2 rounded">3</span>
+                </button>
+                <button onclick="setSectorFilter('Infrastructure / EPC')" id="pill-Infrastructure / EPC" class="sector-pill bg-slate-950 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5">
+                    <span>Infrastructure / EPC</span>
+                    <span id="cnt-Infrastructure / EPC" class="bg-slate-900 text-slate-400 text-[10px] font-mono px-1.5 py-0.2 rounded">3</span>
+                </button>
+                <button onclick="setSectorFilter('Pharmaceuticals')" id="pill-Pharmaceuticals" class="sector-pill bg-slate-950 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5">
+                    <span>Pharmaceuticals</span>
+                    <span id="cnt-Pharmaceuticals" class="bg-slate-900 text-slate-400 text-[10px] font-mono px-1.5 py-0.2 rounded">2</span>
+                </button>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                <select id="sectorFilter" onchange="applyFilters()" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors">
-                    <option value="All">All Sector Packs (6)</option>
-                    <option value="Banks & NBFCs">Banks & NBFCs</option>
-                    <option value="IT Services">IT Services</option>
-                    <option value="FMCG / Consumer">FMCG / Consumer</option>
-                    <option value="Manufacturing / Auto">Manufacturing / Auto</option>
-                    <option value="Infrastructure / EPC">Infrastructure / EPC</option>
-                    <option value="Pharmaceuticals">Pharmaceuticals</option>
-                </select>
+            <!-- Search Bar & Dropdown Selectors & View Mode Switcher -->
+            <div class="flex flex-col md:flex-row gap-3 items-center justify-between pt-2 border-t border-slate-800/80">
+                <div class="flex-1 w-full md:w-auto relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search symbol or company name (e.g., TCS, HDFC, Infosys)..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-9 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
+                    <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
 
-                <select id="statusFilter" onchange="applyFilters()" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors">
-                    <option value="All">All Classifications</option>
-                    <option value="STRONGLY UNDERVALUED">Strongly Undervalued</option>
-                    <option value="UNDERVALUED">Undervalued</option>
-                    <option value="FAIRLY VALUED">Fairly Valued</option>
-                    <option value="OVERVALUED">Overvalued</option>
-                    <option value="STRONGLY OVERVALUED">Strongly Overvalued</option>
-                    <option value="INCONCLUSIVE">Inconclusive</option>
-                </select>
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <select id="statusFilter" onchange="applyFilters()" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors">
+                        <option value="All">All Classifications</option>
+                        <option value="STRONGLY UNDERVALUED">Strongly Undervalued</option>
+                        <option value="UNDERVALUED">Undervalued</option>
+                        <option value="FAIRLY VALUED">Fairly Valued</option>
+                        <option value="OVERVALUED">Overvalued</option>
+                        <option value="STRONGLY OVERVALUED">Strongly Overvalued</option>
+                        <option value="INCONCLUSIVE">Inconclusive</option>
+                    </select>
+
+                    <select id="sortOrder" onchange="applyFilters()" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors">
+                        <option value="upside_desc">Sort: Highest Upside %</option>
+                        <option value="downside_desc">Sort: Highest Downside %</option>
+                        <option value="market_cap_desc">Sort: Market Cap</option>
+                        <option value="pe_asc">Sort: Lowest P/E</option>
+                        <option value="ticker_asc">Sort: Ticker A-Z</option>
+                    </select>
+
+                    <!-- Grid vs Table View Mode Switcher -->
+                    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
+                        <button onclick="setViewMode('grid')" id="viewModeGridBtn" class="px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-md transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-border-all text-xs"></i>
+                            <span>Grid</span>
+                        </button>
+                        <button onclick="setViewMode('table')" id="viewModeTableBtn" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-list text-xs"></i>
+                            <span>Table</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 20-Company Grid -->
+        <!-- 20-Company Main Content Area (Grid or Table View) -->
         <div id="companyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <!-- Dynamic Company Cards -->
         </div>
 
+        <div id="companyTableView" class="hidden bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                            <th class="p-3.5 font-bold uppercase tracking-wider">Company</th>
+                            <th class="p-3.5 font-bold uppercase tracking-wider">Sector Pack</th>
+                            <th class="p-3.5 text-right font-bold uppercase tracking-wider">Market Price</th>
+                            <th class="p-3.5 text-right font-bold uppercase tracking-wider">Target Q50</th>
+                            <th class="p-3.5 text-right font-bold uppercase tracking-wider">Upside / Mispricing</th>
+                            <th class="p-3.5 text-center font-bold uppercase tracking-wider">Classification</th>
+                            <th class="p-3.5 text-center font-bold uppercase tracking-wider">Target Range Mini Bar</th>
+                            <th class="p-3.5 text-right font-bold uppercase tracking-wider">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companyTableBody" class="divide-y divide-slate-800/70 text-slate-300">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Detail Drawer Modal -->
+    <!-- Drawer Modal -->
     <div id="detailModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex justify-end">
-        <div class="bg-slate-900 border-l border-slate-800 w-full max-w-5xl h-full overflow-y-auto p-6 flex flex-col space-y-6 shadow-2xl">
-            <!-- Modal Header -->
-            <div class="flex items-start justify-between border-b border-slate-800 pb-4">
-                <div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h2 id="modalTitle" class="text-2xl font-black text-white tracking-tight">Company Name</h2>
-                        <span id="modalSymbol" class="bg-indigo-950/80 border border-indigo-700/50 text-indigo-300 font-mono text-xs px-2.5 py-1 rounded-lg font-bold">SYMBOL.NS</span>
-                        <span id="modalStatusBadge" class="text-xs px-3 py-1 rounded-full font-bold shadow-sm">STATUS</span>
+        <div class="bg-slate-900 border-l border-slate-800 w-full max-w-5xl h-full overflow-y-auto flex flex-col shadow-2xl">
+            
+            <!-- Sticky Drawer Header -->
+            <div class="sticky top-0 bg-slate-900/95 backdrop-blur-xl z-20 border-b border-slate-800 p-6 space-y-4 shadow-lg">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <h2 id="modalTitle" class="text-2xl font-black text-white tracking-tight">Company Name</h2>
+                            <span id="modalSymbol" class="bg-indigo-950/90 border border-indigo-700/60 text-indigo-300 font-mono text-xs px-2.5 py-1 rounded-lg font-extrabold shadow-sm">SYMBOL.NS</span>
+                            <span id="modalStatusBadge" class="text-xs px-3 py-1 rounded-full font-bold shadow-sm">STATUS</span>
+                        </div>
+                        <p id="modalSector" class="text-xs text-slate-400 mt-1 flex items-center space-x-2">
+                            <i class="fa-solid fa-layer-group text-indigo-400 text-[10px]"></i>
+                            <span>Sector Pack • Subsector</span>
+                        </p>
                     </div>
-                    <p id="modalSector" class="text-xs text-slate-400 mt-1 flex items-center space-x-2">
-                        <i class="fa-solid fa-layer-group text-indigo-400 text-[10px]"></i>
-                        <span>Sector Pack • Subsector</span>
-                    </p>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button onclick="copyModalMarkdown()" title="Copy Valuation Research Summary" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-2 rounded-xl text-xs font-semibold border border-slate-700 transition-colors flex items-center space-x-1.5">
+                            <i class="fa-solid fa-copy text-xs"></i>
+                            <span>Copy Summary</span>
+                        </button>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                    </div>
                 </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+
+                <!-- Navigation Tabs inside Drawer -->
+                <div class="flex items-center space-x-4 border-b border-slate-800/80 pt-2 overflow-x-auto scrollbar-none text-xs font-semibold">
+                    <button onclick="switchDrawerTab('tab-verdict')" id="btn-tab-verdict" class="drawer-tab drawer-tab-active pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0">
+                        <i class="fa-solid fa-lightbulb text-indigo-400"></i>
+                        <span>Executive Narrative</span>
+                    </button>
+                    <button onclick="switchDrawerTab('tab-factors')" id="btn-tab-factors" class="drawer-tab text-slate-400 hover:text-white pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0">
+                        <i class="fa-solid fa-chart-pie text-indigo-400"></i>
+                        <span>Key Factors & Extent</span>
+                    </button>
+                    <button onclick="switchDrawerTab('tab-contrib')" id="btn-tab-contrib" class="drawer-tab text-slate-400 hover:text-white pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0">
+                        <i class="fa-solid fa-list-check text-indigo-400"></i>
+                        <span>Method Contributions</span>
+                    </button>
+                    <button onclick="switchDrawerTab('tab-eligibility')" id="btn-tab-eligibility" class="drawer-tab text-slate-400 hover:text-white pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0">
+                        <i class="fa-solid fa-scale-balanced text-indigo-400"></i>
+                        <span>Eligibility & Veto Reasons</span>
+                    </button>
+                    <button onclick="switchDrawerTab('tab-sensitivity')" id="btn-tab-sensitivity" class="drawer-tab text-slate-400 hover:text-white pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0">
+                        <i class="fa-solid fa-table-cells text-indigo-400"></i>
+                        <span>Sensitivity Matrix</span>
+                    </button>
+                    <button onclick="switchDrawerTab('tab-raw')" id="btn-tab-raw" class="drawer-tab text-slate-400 hover:text-white pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0">
+                        <i class="fa-solid fa-database text-indigo-400"></i>
+                        <span>Financial Ratios</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Modal Content Payload -->
-            <div id="modalBody" class="space-y-6 flex-1">
+            <!-- Modal Body Content -->
+            <div id="modalBody" class="p-6 space-y-6 flex-1">
                 <!-- Dynamically Populated -->
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
+    <!-- JavaScript Engine -->
     <script>
         let allCompanies = [];
+        let currentSectorFilter = "All";
+        let currentClassificationFilter = "All";
+        let currentViewMode = "grid";
+        let sectorChartInstance = null;
+        let activeModalData = null;
 
         document.addEventListener("DOMContentLoaded", () => {
             loadCompanies();
@@ -190,18 +379,168 @@
                 const data = await res.json();
                 allCompanies = data.companies || [];
                 updateKPIs(data.stats || {});
-                renderGrid(allCompanies);
+                renderSectorChart();
+                updateSectorCounts();
+                applyFilters();
             } catch (err) {
                 console.error("Error loading company list:", err);
             }
         }
 
         function updateKPIs(stats) {
-            document.getElementById("kpiTotal").innerText = stats.total || 20;
+            const tot = stats.total || allCompanies.length || 20;
+            document.getElementById("kpiTotal").innerText = tot;
             document.getElementById("kpiUndervalued").innerText = stats.undervalued || 0;
             document.getElementById("kpiFair").innerText = stats.fairly_valued || 0;
             document.getElementById("kpiOvervalued").innerText = stats.overvalued || 0;
             document.getElementById("kpiInconclusive").innerText = stats.inconclusive || 0;
+
+            if (tot > 0) {
+                document.getElementById("barUndervalued").style.width = `${((stats.undervalued||0)/tot)*100}%`;
+                document.getElementById("barFair").style.width = `${((stats.fairly_valued||0)/tot)*100}%`;
+                document.getElementById("barOvervalued").style.width = `${((stats.overvalued||0)/tot)*100}%`;
+            }
+        }
+
+        function updateSectorCounts() {
+            const counts = { "All": allCompanies.length };
+            allCompanies.forEach(c => {
+                const s = c.sector || "Other";
+                counts[s] = (counts[s] || 0) + 1;
+            });
+            Object.keys(counts).forEach(sec => {
+                const el = document.getElementById(`cnt-${sec}`);
+                if (el) el.innerText = counts[sec];
+            });
+        }
+
+        function renderSectorChart() {
+            const ctx = document.getElementById("sectorChart");
+            if (!ctx) return;
+
+            const sectorCounts = {};
+            allCompanies.forEach(c => {
+                const s = c.sector || "Other";
+                sectorCounts[s] = (sectorCounts[s] || 0) + 1;
+            });
+
+            const labels = Object.keys(sectorCounts);
+            const dataVals = Object.values(sectorCounts);
+
+            if (sectorChartInstance) {
+                sectorChartInstance.destroy();
+            }
+
+            sectorChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataVals,
+                        backgroundColor: [
+                            '#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#0f172a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    cutout: '72%'
+                }
+            });
+        }
+
+        function setSectorFilter(sec) {
+            currentSectorFilter = sec;
+            document.querySelectorAll(".sector-pill").forEach(p => {
+                p.className = "sector-pill bg-slate-950 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 transition-all shrink-0 flex items-center space-x-1.5";
+            });
+            const activePill = document.getElementById("pill-" + sec);
+            if (activePill) {
+                activePill.className = "sector-pill sector-pill-active px-3 py-1.5 rounded-xl border border-indigo-500 transition-all shrink-0 flex items-center space-x-1.5";
+            }
+            applyFilters();
+        }
+
+        function setClassificationFilter(cls) {
+            currentClassificationFilter = cls;
+            document.getElementById("statusFilter").value = cls;
+            applyFilters();
+        }
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const gridEl = document.getElementById("companyGrid");
+            const tableEl = document.getElementById("companyTableView");
+            const gridBtn = document.getElementById("viewModeGridBtn");
+            const tableBtn = document.getElementById("viewModeTableBtn");
+
+            if (mode === "grid") {
+                gridEl.classList.remove("hidden");
+                tableEl.classList.add("hidden");
+                gridBtn.className = "px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-md transition-all flex items-center space-x-1.5";
+                tableBtn.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center space-x-1.5";
+            } else {
+                gridEl.classList.add("hidden");
+                tableEl.classList.remove("hidden");
+                tableBtn.className = "px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-md transition-all flex items-center space-x-1.5";
+                gridBtn.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center space-x-1.5";
+            }
+            applyFilters();
+        }
+
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("clearSearchBtn").classList.add("hidden");
+            applyFilters();
+        }
+
+        function renderQuantileBar(q10, q50, q90, price) {
+            if (!q10 || !q90 || !price) return '';
+            const min = Math.min(q10, price) * 0.95;
+            const max = Math.max(q90, price) * 1.05;
+            const range = max - min;
+            if (range <= 0) return '';
+            
+            const pPct = Math.max(0, Math.min(100, ((price - min) / range) * 100));
+            const q50Pct = Math.max(0, Math.min(100, ((q50 - min) / range) * 100));
+            
+            return `
+                <div class="space-y-1 mt-2.5 pt-2 border-t border-slate-800/80">
+                    <div class="flex justify-between text-[10px] font-mono">
+                        <span class="text-slate-400">Q10: ₹${q10}</span>
+                        <span class="text-indigo-300 font-bold">Target Q50: ₹${q50}</span>
+                        <span class="text-slate-400">Q90: ₹${q90}</span>
+                    </div>
+                    <div class="relative w-full h-2.5 bg-slate-950 rounded-full border border-slate-800 overflow-visible">
+                        <div class="absolute h-full bg-indigo-600/40 rounded-full" style="left: ${Math.max(0, ((q10-min)/range)*100)}%; width: ${Math.min(100, ((q90-q10)/range)*100)}%"></div>
+                        <div class="absolute top-1/2 -translate-y-1/2 w-2 h-3.5 bg-indigo-400 rounded-sm shadow-md shadow-indigo-500/50" style="left: calc(${q50Pct}% - 4px)" title="Fair Value Q50: ₹${q50}"></div>
+                        <div class="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${price <= q50 ? 'bg-emerald-400 ring-4 ring-emerald-500/20' : 'bg-rose-400 ring-4 ring-rose-500/20'} rounded-full shadow-lg" style="left: calc(${pPct}% - 7px)" title="Live Market Price: ₹${price}"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMiniQuantileBar(q10, q50, q90, price) {
+            if (!q10 || !q90 || !price) return '-';
+            const min = Math.min(q10, price) * 0.95;
+            const max = Math.max(q90, price) * 1.05;
+            const range = max - min;
+            if (range <= 0) return '-';
+            const pPct = Math.max(0, Math.min(100, ((price - min) / range) * 100));
+            const q50Pct = Math.max(0, Math.min(100, ((q50 - min) / range) * 100));
+            return `
+                <div class="relative w-28 h-2 bg-slate-950 rounded-full border border-slate-800 inline-block overflow-visible">
+                    <div class="absolute h-full bg-indigo-600/40 rounded-full" style="left: ${Math.max(0, ((q10-min)/range)*100)}%; width: ${Math.min(100, ((q90-q10)/range)*100)}%"></div>
+                    <div class="absolute top-1/2 -translate-y-1/2 w-1.5 h-3 bg-indigo-400 rounded-sm" style="left: calc(${q50Pct}% - 3px)"></div>
+                    <div class="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 ${price <= q50 ? 'bg-emerald-400' : 'bg-rose-400'} rounded-full" style="left: calc(${pPct}% - 5px)"></div>
+                </div>
+            `;
         }
 
         function renderGrid(companies) {
@@ -209,7 +548,7 @@
             grid.innerHTML = "";
 
             if (companies.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-16 text-slate-400 bg-slate-900/40 border border-slate-800 rounded-2xl">No companies found matching filters.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-16 text-slate-400 bg-slate-900/40 border border-slate-800 rounded-2xl">No companies found matching specified filters.</div>`;
                 return;
             }
 
@@ -220,46 +559,93 @@
                 const conf = c.confidence_score ? `${c.confidence_score}/100` : '--';
                 const badgeClass = getBadgeClass(c.classification);
 
+                const quantileBar = renderQuantileBar(c.q10, c.q50, c.q90, c.close_price);
+
                 const card = document.createElement("div");
-                card.className = "bg-slate-900 border border-slate-800 hover:border-indigo-500/60 rounded-2xl p-5 shadow-lg hover:shadow-indigo-950/20 transition-all duration-200 flex flex-col justify-between space-y-4 group";
+                card.className = "bg-slate-900 border border-slate-800/90 hover:border-indigo-500/60 rounded-2xl p-5 shadow-xl hover:shadow-indigo-950/30 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between space-y-4 group relative overflow-hidden";
                 card.innerHTML = `
-                    <div class="space-y-3">
+                    <div class="space-y-3 z-10">
                         <div class="flex items-start justify-between">
                             <div>
-                                <span class="text-xs font-mono font-bold text-indigo-400">${c.company_id}</span>
-                                <h3 class="text-base font-bold text-white mt-0.5 group-hover:text-indigo-300 transition-colors">${c.common_name}</h3>
-                                <span class="text-xs text-slate-400 block">${c.sector} • ${c.market_cap_class}</span>
+                                <span class="text-xs font-mono font-black text-indigo-400 uppercase tracking-wider">${c.company_id}</span>
+                                <h3 class="text-base font-extrabold text-white mt-0.5 group-hover:text-indigo-300 transition-colors">${c.common_name}</h3>
+                                <span class="text-xs text-slate-400 block mt-0.5">${c.sector} • ${c.market_cap_class || 'LargeCap'}</span>
                             </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full shadow-sm ${badgeClass}">${c.classification || 'PENDING'}</span>
+                            <span class="text-xs font-bold px-3 py-1 rounded-full shadow-sm ${badgeClass}">${c.classification || 'PENDING'}</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-slate-800 bg-slate-950/60 p-3 rounded-xl border">
+                        <div class="grid grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-slate-800 bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
                             <div>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Live Price</span>
-                                <span class="text-sm font-extrabold text-white">${price}</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Live Market Price</span>
+                                <span class="text-sm font-black text-white">${price}</span>
                             </div>
                             <div>
-                                <span class="text-[10px] text-indigo-300 font-semibold uppercase tracking-wider block">Fair Value (Q50)</span>
-                                <span class="text-sm font-extrabold text-indigo-300">${median}</span>
+                                <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">Target Fair Value</span>
+                                <span class="text-sm font-black text-indigo-300">${median}</span>
                             </div>
                             <div>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Mispricing</span>
-                                <span class="text-xs font-bold ${c.mispricing >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${mispricing}</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Mispricing Gap</span>
+                                <span class="text-xs font-bold ${c.mispricing >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${c.mispricing >= 0 ? '+' : ''}${mispricing}</span>
                             </div>
                             <div>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Confidence Score</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Confidence Score</span>
                                 <span class="text-xs font-bold text-slate-200">${conf}</span>
                             </div>
                         </div>
+
+                        ${quantileBar}
                     </div>
 
-                    <button onclick="openDetail('${c.company_id}')" class="w-full bg-slate-800 hover:bg-indigo-600 text-white text-xs font-semibold py-2.5 px-4 rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md">
+                    <button onclick="openDetail('${c.company_id}')" class="w-full bg-slate-800 hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md z-10">
                         <i class="fa-solid fa-circle-info text-indigo-400 text-xs"></i>
-                        <span>View Full Valuation Breakdown</span>
+                        <span>View Full Valuation Payload</span>
                         <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </button>
                 `;
                 grid.appendChild(card);
+            });
+        }
+
+        function renderTable(companies) {
+            const tbody = document.getElementById("companyTableBody");
+            tbody.innerHTML = "";
+
+            if (companies.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-12 text-slate-400">No companies found matching specified filters.</td></tr>`;
+                return;
+            }
+
+            companies.forEach(c => {
+                const price = c.close_price ? `₹${c.close_price.toLocaleString('en-IN')}` : '₹--';
+                const median = c.q50 ? `₹${c.q50.toLocaleString('en-IN')}` : '₹--';
+                const mispricing = (c.mispricing !== undefined && c.mispricing !== null) ? `${(c.mispricing * 100).toFixed(1)}%` : '0%';
+                const badgeClass = getBadgeClass(c.classification);
+                const miniBar = renderMiniQuantileBar(c.q10, c.q50, c.q90, c.close_price);
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-950/60 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-mono font-bold text-indigo-400">${c.company_id}</span>
+                            <span class="font-bold text-white">${c.common_name}</span>
+                        </div>
+                    </td>
+                    <td class="p-3.5 text-slate-300">${c.sector}</td>
+                    <td class="p-3.5 text-right font-mono font-bold text-white">${price}</td>
+                    <td class="p-3.5 text-right font-mono font-extrabold text-indigo-300">${median}</td>
+                    <td class="p-3.5 text-right font-mono font-bold ${c.mispricing >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${c.mispricing >= 0 ? '+' : ''}${mispricing}</td>
+                    <td class="p-3.5 text-center">
+                        <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${badgeClass}">${c.classification || 'PENDING'}</span>
+                    </td>
+                    <td class="p-3.5 text-center">${miniBar}</td>
+                    <td class="p-3.5 text-right">
+                        <button onclick="openDetail('${c.company_id}')" class="bg-indigo-950 hover:bg-indigo-600 border border-indigo-700/60 text-indigo-200 hover:text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all">
+                            Inspect
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
@@ -277,17 +663,38 @@
 
         function applyFilters() {
             const search = document.getElementById("searchInput").value.toLowerCase();
-            const sector = document.getElementById("sectorFilter").value;
             const status = document.getElementById("statusFilter").value;
+            const sort = document.getElementById("sortOrder").value;
+            const clearBtn = document.getElementById("clearSearchBtn");
+
+            if (search) {
+                clearBtn.classList.remove("hidden");
+            } else {
+                clearBtn.classList.add("hidden");
+            }
 
             let filtered = allCompanies.filter(c => {
                 const matchSearch = !search || c.company_id.toLowerCase().includes(search) || c.common_name.toLowerCase().includes(search);
-                const matchSector = sector === "All" || c.sector === sector;
+                const matchSector = currentSectorFilter === "All" || c.sector === currentSectorFilter;
                 const matchStatus = status === "All" || c.classification === status;
                 return matchSearch && matchSector && matchStatus;
             });
 
-            renderGrid(filtered);
+            // Sorting
+            filtered.sort((a, b) => {
+                if (sort === "upside_desc") return (b.mispricing || 0) - (a.mispricing || 0);
+                if (sort === "downside_desc") return (a.mispricing || 0) - (b.mispricing || 0);
+                if (sort === "market_cap_desc") return (b.market_cap || 0) - (a.market_cap || 0);
+                if (sort === "pe_asc") return (a.pe_ratio || 999) - (b.pe_ratio || 999);
+                if (sort === "ticker_asc") return a.company_id.localeCompare(b.company_id);
+                return 0;
+            });
+
+            if (currentViewMode === "grid") {
+                renderGrid(filtered);
+            } else {
+                renderTable(filtered);
+            }
         }
 
         async function openDetail(symbol) {
@@ -298,16 +705,35 @@
             modalBody.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-24 space-y-4">
                     <i class="fa-solid fa-circle-notch fa-spin text-5xl text-indigo-500"></i>
-                    <p class="text-sm font-semibold text-slate-300">Evaluating Valuation & Factor Attribution Engine for ${symbol}...</p>
+                    <p class="text-sm font-semibold text-slate-300">Evaluating multi-scenario valuation models for ${symbol}...</p>
                 </div>
             `;
 
             try {
                 const res = await fetch(`/api/company/${symbol}`);
                 const data = await res.json();
+                activeModalData = data;
                 renderDetailModal(data);
             } catch (err) {
-                modalBody.innerHTML = `<div class="text-rose-400 text-center py-12">Failed to load company valuation details.</div>`;
+                modalBody.innerHTML = `<div class="text-rose-400 text-center py-12">Failed to load company valuation payload.</div>`;
+            }
+        }
+
+        function switchDrawerTab(tabId) {
+            document.querySelectorAll(".drawer-tab").forEach(btn => {
+                btn.className = "drawer-tab text-slate-400 hover:text-white pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0";
+            });
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "drawer-tab drawer-tab-active pb-2.5 transition-colors flex items-center space-x-1.5 shrink-0";
+            }
+            
+            document.querySelectorAll(".drawer-section").forEach(sec => {
+                sec.classList.add("hidden");
+            });
+            const sec = document.getElementById(tabId);
+            if (sec) {
+                sec.classList.remove("hidden");
             }
         }
 
@@ -318,7 +744,6 @@
             const elig = data.classification_layers || {};
             const scenarios = data.scenarios || {};
             const sensitivity = data.sensitivity || {};
-            const weights = val.weights_applied || {};
             const aiExp = data.ai_explanation || {};
             const factors = aiExp.factors || [];
             const methodContribs = aiExp.method_contributions || [];
@@ -335,305 +760,305 @@
 
             const modalBody = document.getElementById("modalBody");
             modalBody.innerHTML = `
-                <!-- 1. Header Price & Action Bar -->
-                <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <!-- 1. Header Price & Refresh Action Bar -->
+                <div class="bg-gradient-to-r from-slate-900 via-indigo-950/50 to-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-baseline space-x-3">
                             <span class="text-3xl font-black text-white">₹${(market.close_price || 0).toLocaleString('en-IN')}</span>
-                            <span class="text-xs text-slate-400 font-medium">NSE Market Price</span>
+                            <span class="text-xs text-slate-400 font-medium">NSE Exchange Price</span>
                         </div>
-                        <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-400">
+                        <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-400 font-mono">
                             <span>Market Cap: <strong class="text-slate-200">₹${((market.market_cap || 0)/10000000).toFixed(0)} Cr</strong></span>
                             <span>•</span>
                             <span>P/E: <strong class="text-slate-200">${market.pe_ratio || '--'}x</strong></span>
                             <span>•</span>
                             <span>P/B: <strong class="text-slate-200">${market.pb_ratio || '--'}x</strong></span>
+                            <span>•</span>
+                            <span>EV/EBITDA: <strong class="text-slate-200">${market.ev_ebitda || '--'}x</strong></span>
                         </div>
                     </div>
-                    <button onclick="refreshSingleCompany('${master.company_id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center space-x-2 shadow-lg shadow-indigo-950/40">
+                    <button onclick="refreshSingleCompany('${master.company_id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center space-x-2 shadow-lg shadow-indigo-950/40 shrink-0">
                         <i class="fa-solid fa-sync text-xs"></i>
-                        <span>Fetch Live Data & Update</span>
+                        <span>Fetch Live Data & Recalculate</span>
                     </button>
                 </div>
 
-                <!-- 2. Valuation Verdict & Reasoning Summary Banner -->
-                <div class="bg-gradient-to-r from-indigo-950/90 via-slate-900 to-slate-900 p-5 rounded-2xl border border-indigo-700/60 space-y-3 shadow-xl">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold text-indigo-300 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i class="fa-solid fa-lightbulb text-sm text-indigo-400"></i>
-                            <span>Valuation Verdict & Prediction Summary</span>
-                        </span>
-                        <span class="text-xs bg-indigo-900/80 text-indigo-200 px-3 py-1 rounded-full border border-indigo-600 font-mono font-bold shadow-sm">
-                            Confidence: ${val.confidence_score || 80}/100
-                        </span>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
-                        <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800">
-                            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Target Fair Value (Q50)</span>
-                            <span class="text-2xl font-black text-indigo-300 mt-0.5 block">₹${val.q50 || '--'}</span>
-                        </div>
-                        <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800">
-                            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Model Mispricing</span>
-                            <span class="text-2xl font-black ${(val.mispricing||0) >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-0.5 block">
-                                ${(val.mispricing||0) >= 0 ? '+' : ''}${((val.mispricing||0)*100).toFixed(1)}%
+                <!-- TAB 1: EXECUTIVE NARRATIVE & VERDICT -->
+                <div id="tab-verdict" class="drawer-section space-y-5">
+                    <div class="bg-gradient-to-r from-indigo-950/90 via-slate-900 to-slate-900 p-5 rounded-2xl border border-indigo-700/60 space-y-4 shadow-xl">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold text-indigo-300 uppercase tracking-wider flex items-center space-x-1.5">
+                                <i class="fa-solid fa-lightbulb text-sm text-indigo-400"></i>
+                                <span>Valuation Verdict & Prediction Thesis</span>
+                            </span>
+                            <span class="text-xs bg-indigo-900/80 text-indigo-200 px-3 py-1 rounded-full border border-indigo-600 font-mono font-bold shadow-sm">
+                                Model Confidence: ${val.confidence_score || 80}/100
                             </span>
                         </div>
-                        <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800">
-                            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Signal Classification</span>
-                            <span class="text-base font-bold text-white mt-1 block">${val.classification || 'PENDING'}</span>
-                        </div>
-                    </div>
 
-                    <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2">
-                        <p class="font-semibold text-slate-100 text-sm">${aiExp.verdict_statement || val.rationale || ''}</p>
-                        <p class="text-slate-300 text-xs border-t border-slate-800 pt-2 leading-relaxed">${aiExp.summary_narrative ? aiExp.summary_narrative.split('\n\n')[1] || '' : ''}</p>
-                    </div>
-                </div>
-
-                <!-- 3. Key Factors & Extent of Valuation Impact -->
-                <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div>
-                            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                                <i class="fa-solid fa-chart-pie text-indigo-400"></i>
-                                <span>Key Factors & Extent of Valuation Impact</span>
-                            </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">Quantified metrics driving the model's target fair value of ₹${val.q50 || '--'}</p>
-                        </div>
-                        <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 font-mono">${factors.length} Drivers Evaluated</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        ${factors.map(f => `
-                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2.5 flex flex-col justify-between hover:border-indigo-500/40 transition-colors">
-                                <div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-bold text-slate-100">${f.name}</span>
-                                        <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full ${f.impact_direction === 'positive' ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : (f.impact_direction === 'negative' ? 'bg-rose-950 text-rose-300 border border-rose-700' : 'bg-slate-800 text-slate-300')}">
-                                            ${f.impact_extent_pct >= 0 ? '+' : ''}${f.impact_extent_pct}% Impact
-                                        </span>
-                                    </div>
-                                    <span class="text-xs font-mono font-bold text-indigo-400 block mt-1">Current Metric: ${f.metric_value}</span>
-                                    <p class="text-xs text-slate-300 mt-2 leading-relaxed">${f.description}</p>
-                                </div>
-                                <div class="w-full bg-slate-900 rounded-full h-2 mt-2">
-                                    <div class="${f.impact_direction === 'positive' ? 'bg-emerald-500' : (f.impact_direction === 'negative' ? 'bg-rose-500' : 'bg-slate-500')} h-2 rounded-full" style="width: ${Math.min(100, Math.abs(f.impact_extent_pct) * 4)}%"></div>
-                                </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+                            <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800">
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Target Fair Value (Q50)</span>
+                                <span class="text-2xl font-black text-indigo-300 mt-0.5 block">₹${val.q50 || '--'}</span>
                             </div>
-                        `).join('')}
+                            <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800">
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Model Mispricing</span>
+                                <span class="text-2xl font-black ${(val.mispricing||0) >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-0.5 block">
+                                    ${(val.mispricing||0) >= 0 ? '+' : ''}${((val.mispricing||0)*100).toFixed(1)}%
+                                </span>
+                            </div>
+                            <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800">
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Signal Classification</span>
+                                <span class="text-base font-bold text-white mt-1 block">${val.classification || 'PENDING'}</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2.5">
+                            <p class="font-bold text-slate-100 text-sm flex items-center space-x-2">
+                                <i class="fa-solid fa-quote-left text-indigo-400 text-xs"></i>
+                                <span>${aiExp.verdict_statement || val.rationale || ''}</span>
+                            </p>
+                            <p class="text-slate-300 text-xs border-t border-slate-800 pt-2.5 leading-relaxed">${aiExp.summary_narrative ? aiExp.summary_narrative.split('\n\n')[1] || '' : ''}</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 4. Method Valuation Contribution Breakdown -->
-                ${methodContribs.length > 0 ? `
-                <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div>
-                            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                                <i class="fa-solid fa-list-check text-indigo-400"></i>
-                                <span>Method Valuation Contribution Breakdown</span>
-                            </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">Standalone target price per method vs applied ensemble weight %</p>
+                <!-- TAB 2: KEY FACTORS & EXTENT -->
+                <div id="tab-factors" class="drawer-section hidden space-y-4">
+                    <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                            <div>
+                                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-chart-pie text-indigo-400"></i>
+                                    <span>Key Financial Factors & Extent of Valuation Impact</span>
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Quantified metrics driving target fair value of ₹${val.q50 || '--'}</p>
+                            </div>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 font-mono">${factors.length} Drivers Evaluated</span>
                         </div>
-                    </div>
 
-                    <div class="overflow-x-auto text-xs">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
-                                    <th class="p-3">Valuation Method</th>
-                                    <th class="p-3 text-right">Standalone Fair Value</th>
-                                    <th class="p-3 text-right">Applied Weight</th>
-                                    <th class="p-3 text-right">Weighted Share Value</th>
-                                    <th class="p-3 text-right">Contribution %</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-800/80 text-slate-300">
-                                ${methodContribs.map(mc => `
-                                    <tr class="hover:bg-slate-950/40">
-                                        <td class="p-3 font-semibold text-white flex items-center space-x-2">
-                                            <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
-                                            <span>${mc.method}</span>
-                                        </td>
-                                        <td class="p-3 text-right font-mono font-medium text-slate-200">₹${mc.fair_value.toLocaleString('en-IN')}</td>
-                                        <td class="p-3 text-right font-mono font-bold text-indigo-300">${mc.weight_pct}%</td>
-                                        <td class="p-3 text-right font-mono font-black text-indigo-200">₹${mc.weighted_value.toFixed(1)}</td>
-                                        <td class="p-3 text-right font-mono font-bold text-emerald-400">${mc.contribution_share_pct}%</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                ` : ''}
-
-                <!-- 5. Method Eligibility & Veto Analysis -->
-                <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div>
-                            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                                <i class="fa-solid fa-scale-balanced text-indigo-400"></i>
-                                <span>Why Methods Are Eligible vs Vetoed & Their Model Impact</span>
-                            </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">Method selection rationale and veto protection impact</p>
-                        </div>
-                    </div>
-
-                    <!-- Eligible Methods List -->
-                    <div class="space-y-3">
-                        <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider block">Active Eligible Methods & Impact:</span>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            ${eligExps.map(e => `
-                                <div class="bg-slate-950 p-4 rounded-xl border border-emerald-950 border-l-4 border-l-emerald-500 space-y-1.5">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-xs font-bold text-emerald-300">${e.method}</span>
-                                        <span class="text-[11px] font-mono bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">Weight: ${e.weight_pct}%</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${factors.map(f => `
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2.5 flex flex-col justify-between hover:border-indigo-500/40 transition-colors">
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-slate-100">${f.name}</span>
+                                            <span class="text-xs font-mono font-extrabold px-2.5 py-0.5 rounded-full ${f.impact_direction === 'positive' ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : (f.impact_direction === 'negative' ? 'bg-rose-950 text-rose-300 border border-rose-700' : 'bg-slate-800 text-slate-300')}">
+                                                ${f.impact_extent_pct >= 0 ? '+' : ''}${f.impact_extent_pct}% Impact
+                                            </span>
+                                        </div>
+                                        <span class="text-xs font-mono font-bold text-indigo-400 block mt-1">Metric Value: ${f.metric_value}</span>
+                                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">${f.description}</p>
                                     </div>
-                                    <p class="text-xs text-slate-300 leading-relaxed">${e.reason}</p>
-                                    <span class="text-[11px] text-indigo-300 font-semibold block pt-1 border-t border-slate-800/80">${e.impact}</span>
+                                    <div class="w-full bg-slate-900 rounded-full h-2 mt-2">
+                                        <div class="${f.impact_direction === 'positive' ? 'bg-emerald-500' : (f.impact_direction === 'negative' ? 'bg-rose-500' : 'bg-slate-500')} h-2 rounded-full" style="width: ${Math.min(100, Math.abs(f.impact_extent_pct) * 4)}%"></div>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
+                </div>
 
-                    <!-- Vetoed Methods List -->
-                    ${vetoed.length > 0 ? `
-                    <div class="space-y-3 pt-2">
-                        <span class="text-xs font-extrabold text-amber-400 uppercase tracking-wider block">Vetoed Methods & Protection Rationale:</span>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            ${vetoed.map(v => `
-                                <div class="bg-slate-950 p-4 rounded-xl border border-amber-950 border-l-4 border-l-amber-500 space-y-1.5">
-                                    <span class="text-xs font-bold text-amber-300 block">${v.method} (VETOED)</span>
-                                    <p class="text-xs text-slate-300 leading-relaxed">${v.reason}</p>
-                                    <span class="text-[11px] text-amber-200/80 font-medium block pt-1 border-t border-slate-800/80">
-                                        Model Impact: Excluded from fair value calculation to prevent skewed multiples and distorted target price.
-                                    </span>
-                                </div>
-                            `).join('')}
+                <!-- TAB 3: METHOD CONTRIBUTIONS -->
+                <div id="tab-contrib" class="drawer-section hidden space-y-4">
+                    ${methodContribs.length > 0 ? `
+                    <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                            <div>
+                                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-list-check text-indigo-400"></i>
+                                    <span>Method Valuation Contribution Breakdown</span>
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Standalone target price per method vs applied weight %</p>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto text-xs">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                                        <th class="p-3">Valuation Method</th>
+                                        <th class="p-3 text-right">Standalone Target</th>
+                                        <th class="p-3 text-right">Applied Weight</th>
+                                        <th class="p-3 text-right">Weighted Value</th>
+                                        <th class="p-3 text-right">Contribution %</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/80 text-slate-300">
+                                    ${methodContribs.map(mc => `
+                                        <tr class="hover:bg-slate-950/40">
+                                            <td class="p-3 font-semibold text-white flex items-center space-x-2">
+                                                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                                                <span>${mc.method}</span>
+                                            </td>
+                                            <td class="p-3 text-right font-mono font-medium text-slate-200">₹${mc.fair_value.toLocaleString('en-IN')}</td>
+                                            <td class="p-3 text-right font-mono font-bold text-indigo-300">${mc.weight_pct}%</td>
+                                            <td class="p-3 text-right font-mono font-black text-indigo-200">₹${mc.weighted_value.toFixed(1)}</td>
+                                            <td class="p-3 text-right font-mono font-bold text-emerald-400">${mc.contribution_share_pct}%</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     ` : ''}
                 </div>
 
-                <!-- 6. WACC vs Terminal Growth Sensitivity Matrix with Highlighted Scenarios -->
-                ${sensitivity.matrix ? `
-                <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-slate-800 gap-2">
-                        <div>
-                            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                                <i class="fa-solid fa-table-cells text-indigo-400"></i>
-                                <span>Sensitivity Scenario Matrix (WACC \\ Terminal Growth)</span>
-                            </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">Cell values represent target share price under WACC & Terminal Growth variations</p>
+                <!-- TAB 4: ELIGIBILITY & VETOES -->
+                <div id="tab-eligibility" class="drawer-section hidden space-y-4">
+                    <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                            <div>
+                                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-scale-balanced text-indigo-400"></i>
+                                    <span>Method Eligibility & Veto Protection Rationale</span>
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Why methods are eligible or vetoed and their model impact</p>
+                            </div>
                         </div>
-                        <div class="flex items-center space-x-3 text-[11px]">
-                            <span class="flex items-center space-x-1.5 bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded border border-indigo-700">
-                                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
-                                <span>Normal (Base)</span>
-                            </span>
-                            <span class="flex items-center space-x-1.5 bg-rose-950 text-rose-300 px-2 py-0.5 rounded border border-rose-700">
-                                <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-                                <span>Downside</span>
-                            </span>
-                            <span class="flex items-center space-x-1.5 bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-700">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                                <span>Upside</span>
-                            </span>
-                        </div>
-                    </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center border-collapse">
-                            <thead>
-                                <tr class="bg-slate-950 text-slate-400">
-                                    <th class="p-3 border border-slate-800 font-bold">WACC \\ g</th>
-                                    ${sensitivity.g_headers.map(g => `<th class="p-3 border border-slate-800 font-semibold">${g}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${sensitivity.wacc_headers.map((w, rIdx) => `
-                                    <tr>
-                                        <td class="p-3 border border-slate-800 bg-slate-950 text-slate-300 font-bold">${w}</td>
-                                        ${sensitivity.matrix[rIdx].map((val_cell, cIdx) => {
-                                            const isNormal = (rIdx === 2 && cIdx === 2);
-                                            const isDownside = (rIdx === 4 && cIdx === 0);
-                                            const isUpside = (rIdx === 0 && cIdx === 4);
-
-                                            let cellBg = "bg-slate-950/40 text-slate-300";
-                                            let badgeHtml = "";
-
-                                            if (isNormal) {
-                                                cellBg = "bg-indigo-900/80 border-2 border-indigo-400 text-indigo-100 font-black shadow-lg";
-                                                badgeHtml = `<span class="block text-[9px] uppercase font-bold text-indigo-300 tracking-wider">NORMAL (BASE)</span>`;
-                                            } else if (isDownside) {
-                                                cellBg = "bg-rose-950/90 border-2 border-rose-500 text-rose-100 font-black shadow-lg";
-                                                badgeHtml = `<span class="block text-[9px] uppercase font-bold text-rose-300 tracking-wider">DOWNSIDE</span>`;
-                                            } else if (isUpside) {
-                                                cellBg = "bg-emerald-950/90 border-2 border-emerald-500 text-emerald-100 font-black shadow-lg";
-                                                badgeHtml = `<span class="block text-[9px] uppercase font-bold text-emerald-300 tracking-wider">UPSIDE</span>`;
-                                            }
-
-                                            return `
-                                                <td class="p-3 border border-slate-800 ${cellBg}">
-                                                    ${badgeHtml}
-                                                    <span class="text-sm">₹${val_cell}</span>
-                                                </td>
-                                            `;
-                                        }).join('')}
-                                    </tr>
+                        <div class="space-y-3">
+                            <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider block">Active Eligible Methods & Impact:</span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                ${eligExps.map(e => `
+                                    <div class="bg-slate-950 p-4 rounded-xl border border-emerald-950 border-l-4 border-l-emerald-500 space-y-1.5">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-emerald-300">${e.method}</span>
+                                            <span class="text-[11px] font-mono bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">Weight: ${e.weight_pct}%</span>
+                                        </div>
+                                        <p class="text-xs text-slate-300 leading-relaxed">${e.reason}</p>
+                                        <span class="text-[11px] text-indigo-300 font-semibold block pt-1 border-t border-slate-800/80">${e.impact}</span>
+                                    </div>
                                 `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
+                            </div>
+                        </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
-                        <div class="bg-rose-950/50 p-3 rounded-xl border border-rose-800 text-rose-200">
-                            <span class="font-bold block text-rose-300">Downside Case (Row 5, Col 1):</span>
-                            <span>Highest WACC (${sensitivity.wacc_headers[4]}) & Lowest g (${sensitivity.g_headers[0]}) → <strong>₹${sensitivity.matrix[4][0]}</strong></span>
+                        ${vetoed.length > 0 ? `
+                        <div class="space-y-3 pt-2">
+                            <span class="text-xs font-extrabold text-amber-400 uppercase tracking-wider block">Vetoed Methods & Protection Rationale:</span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                ${vetoed.map(v => `
+                                    <div class="bg-slate-950 p-4 rounded-xl border border-amber-950 border-l-4 border-l-amber-500 space-y-1.5">
+                                        <span class="text-xs font-bold text-amber-300 block">${v.method} (VETOED)</span>
+                                        <p class="text-xs text-slate-300 leading-relaxed">${v.reason}</p>
+                                        <span class="text-[11px] text-amber-200/80 font-medium block pt-1 border-t border-slate-800/80">
+                                            Model Impact: Excluded from fair value calculation to prevent skewed multiples and distorted target price.
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
-                        <div class="bg-indigo-950/50 p-3 rounded-xl border border-indigo-800 text-indigo-200">
-                            <span class="font-bold block text-indigo-300">Normal / Base Case (Row 3, Col 3):</span>
-                            <span>Base WACC (${sensitivity.wacc_headers[2]}) & Base g (${sensitivity.g_headers[2]}) → <strong>₹${sensitivity.matrix[2][2]}</strong></span>
-                        </div>
-                        <div class="bg-emerald-950/50 p-3 rounded-xl border border-emerald-800 text-emerald-200">
-                            <span class="font-bold block text-emerald-300">Upside Case (Row 1, Col 5):</span>
-                            <span>Lowest WACC (${sensitivity.wacc_headers[0]}) & Highest g (${sensitivity.g_headers[4]}) → <strong>₹${sensitivity.matrix[0][4]}</strong></span>
-                        </div>
+                        ` : ''}
                     </div>
                 </div>
-                ` : ''}
 
-                <!-- 7. Financial Fundamentals & Layer B Attributes -->
-                <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                            <i class="fa-solid fa-database text-indigo-400"></i>
-                            <span>Layer B Business Model Attributes & Financial Ratios</span>
-                        </h3>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                            <h4 class="font-bold text-indigo-300 uppercase tracking-wider text-[11px]">Qualitative Attributes</h4>
-                            <ul class="space-y-2 text-slate-300 pt-1">
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Financial Nature:</strong> <span>${elig.layer_b?.financial_nature || '--'}</span></li>
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Lifecycle Stage:</strong> <span>${elig.layer_b?.lifecycle || '--'}</span></li>
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Business Model:</strong> <span>${elig.layer_b?.business_model || '--'}</span></li>
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Asset Intensity:</strong> <span>${elig.layer_b?.asset_intensity || '--'}</span></li>
-                                <li class="flex justify-between"><strong class="text-slate-400">Regulatory Framework:</strong> <span>${elig.layer_b?.regulatory_model || '--'}</span></li>
-                            </ul>
+                <!-- TAB 5: SENSITIVITY MATRIX -->
+                <div id="tab-sensitivity" class="drawer-section hidden space-y-4">
+                    ${sensitivity.matrix ? `
+                    <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-slate-800 gap-2">
+                            <div>
+                                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-table-cells text-indigo-400"></i>
+                                    <span>Sensitivity Scenario Matrix (WACC \\ Terminal Growth)</span>
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Cell values represent target share price under WACC & Terminal Growth variations</p>
+                            </div>
+                            <div class="flex items-center space-x-3 text-[11px]">
+                                <span class="flex items-center space-x-1.5 bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded border border-indigo-700 font-bold">
+                                    <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                                    <span>Normal (Base)</span>
+                                </span>
+                                <span class="flex items-center space-x-1.5 bg-rose-950 text-rose-300 px-2 py-0.5 rounded border border-rose-700 font-bold">
+                                    <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                                    <span>Downside</span>
+                                </span>
+                                <span class="flex items-center space-x-1.5 bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-700 font-bold">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                    <span>Upside</span>
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                            <h4 class="font-bold text-indigo-300 uppercase tracking-wider text-[11px]">Financial Metrics</h4>
-                            <ul class="space-y-2 text-slate-300 pt-1">
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Revenue:</strong> <span>₹${((data.financials?.revenue||0)/10000000).toFixed(0)} Cr</span></li>
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Net Profit (PAT):</strong> <span>₹${((data.financials?.pat||0)/10000000).toFixed(0)} Cr</span></li>
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Total Book Equity:</strong> <span>₹${((data.financials?.equity||0)/10000000).toFixed(0)} Cr</span></li>
-                                <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Total Debt:</strong> <span>₹${((data.financials?.debt||0)/10000000).toFixed(0)} Cr</span></li>
-                                <li class="flex justify-between"><strong class="text-slate-400">EPS:</strong> <span>₹${data.financials?.eps || market.eps || '--'}</span></li>
-                            </ul>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-center border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-950 text-slate-400">
+                                        <th class="p-3 border border-slate-800 font-bold">WACC \\ g</th>
+                                        ${sensitivity.g_headers.map(g => `<th class="p-3 border border-slate-800 font-semibold">${g}</th>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${sensitivity.wacc_headers.map((w, rIdx) => `
+                                        <tr>
+                                            <td class="p-3 border border-slate-800 bg-slate-950 text-slate-300 font-bold">${w}</td>
+                                            ${sensitivity.matrix[rIdx].map((val_cell, cIdx) => {
+                                                const isNormal = (rIdx === 2 && cIdx === 2);
+                                                const isDownside = (rIdx === 4 && cIdx === 0);
+                                                const isUpside = (rIdx === 0 && cIdx === 4);
+
+                                                let cellBg = "bg-slate-950/40 text-slate-300";
+                                                let badgeHtml = "";
+
+                                                if (isNormal) {
+                                                    cellBg = "bg-indigo-900/80 border-2 border-indigo-400 text-indigo-100 font-black shadow-lg";
+                                                    badgeHtml = `<span class="block text-[9px] uppercase font-bold text-indigo-300 tracking-wider">NORMAL (BASE)</span>`;
+                                                } else if (isDownside) {
+                                                    cellBg = "bg-rose-950/90 border-2 border-rose-500 text-rose-100 font-black shadow-lg";
+                                                    badgeHtml = `<span class="block text-[9px] uppercase font-bold text-rose-300 tracking-wider">DOWNSIDE</span>`;
+                                                } else if (isUpside) {
+                                                    cellBg = "bg-emerald-950/90 border-2 border-emerald-500 text-emerald-100 font-black shadow-lg";
+                                                    badgeHtml = `<span class="block text-[9px] uppercase font-bold text-emerald-300 tracking-wider">UPSIDE</span>`;
+                                                }
+
+                                                return `
+                                                    <td class="p-3 border border-slate-800 ${cellBg}">
+                                                        ${badgeHtml}
+                                                        <span class="text-sm">₹${val_cell}</span>
+                                                    </td>
+                                                `;
+                                            }).join('')}
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- TAB 6: RAW FINANCIAL RATIOS -->
+                <div id="tab-raw" class="drawer-section hidden space-y-4">
+                    <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                                <i class="fa-solid fa-database text-indigo-400"></i>
+                                <span>Layer B Financial Ratios & Fundamentals</span>
+                            </h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                                <h4 class="font-bold text-indigo-300 uppercase tracking-wider text-[11px]">Qualitative Attributes</h4>
+                                <ul class="space-y-2 text-slate-300 pt-1">
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Financial Nature:</strong> <span>${elig.layer_b?.financial_nature || '--'}</span></li>
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Lifecycle Stage:</strong> <span>${elig.layer_b?.lifecycle || '--'}</span></li>
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Business Model:</strong> <span>${elig.layer_b?.business_model || '--'}</span></li>
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Asset Intensity:</strong> <span>${elig.layer_b?.asset_intensity || '--'}</span></li>
+                                    <li class="flex justify-between"><strong class="text-slate-400">Regulatory Framework:</strong> <span>${elig.layer_b?.regulatory_model || '--'}</span></li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                                <h4 class="font-bold text-indigo-300 uppercase tracking-wider text-[11px]">Financial Fundamentals</h4>
+                                <ul class="space-y-2 text-slate-300 pt-1">
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Revenue:</strong> <span>₹${((data.financials?.revenue||0)/10000000).toFixed(0)} Cr</span></li>
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Net Profit (PAT):</strong> <span>₹${((data.financials?.pat||0)/10000000).toFixed(0)} Cr</span></li>
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Total Book Equity:</strong> <span>₹${((data.financials?.equity||0)/10000000).toFixed(0)} Cr</span></li>
+                                    <li class="flex justify-between border-b border-slate-800/80 pb-1.5"><strong class="text-slate-400">Total Debt:</strong> <span>₹${((data.financials?.debt||0)/10000000).toFixed(0)} Cr</span></li>
+                                    <li class="flex justify-between"><strong class="text-slate-400">EPS:</strong> <span>₹${data.financials?.eps || market.eps || '--'}</span></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -644,10 +1069,29 @@
             document.getElementById("detailModal").classList.add("hidden");
         }
 
+        function copyModalMarkdown() {
+            if (!activeModalData) return;
+            const master = activeModalData.company || {};
+            const val = activeModalData.valuation || {};
+            const aiExp = activeModalData.ai_explanation || {};
+            
+            const text = `# Valuation Summary: ${master.common_name} (${master.company_id})\n` +
+                `- **Sector**: ${master.sector}\n` +
+                `- **Target Fair Value (Q50)**: ₹${val.q50}\n` +
+                `- **Signal Classification**: ${val.classification}\n` +
+                `- **Model Confidence**: ${val.confidence_score}/100\n\n` +
+                `## AI Verdict Statement\n${aiExp.verdict_statement || val.rationale || ''}\n`;
+                
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied Valuation Research Summary to clipboard!");
+            });
+        }
+
         async function refreshSingleCompany(symbol) {
             try {
                 const res = await fetch(`/api/company/${symbol}/refresh`, { method: "POST" });
                 const data = await res.json();
+                activeModalData = data.data;
                 renderDetailModal(data.data);
                 loadCompanies();
             } catch (err) {
