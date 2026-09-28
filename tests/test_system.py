@@ -69,6 +69,21 @@ def test_ensemble_classification():
     res = compute_ensemble_valuation("TEST.NS", market_price=350.0, scenario_results=scenarios, vetoed_methods=[])
     assert res["classification"] in ["UNDERVALUED", "STRONGLY UNDERVALUED"]
 
+def test_ai_explanation_generation():
+    from src.explanation_engine import generate_ai_explanation
+    master = {"company_id": "TCS.NS", "common_name": "Tata Consultancy Services", "sector": "IT Services"}
+    market = {"close_price": 3200.0, "pe_ratio": 26.5, "pb_ratio": 12.0}
+    financials = {"revenue": 240000.0, "pat": 45000.0, "equity": 90000.0, "debt": 0.0}
+    sector_metrics = {"roe": 0.50, "constant_currency_growth": 0.10}
+    valuation = {"q50": 3800.0, "mispricing": 0.1875, "classification": "UNDERVALUED", "confidence_score": 90.0, "weights_applied": {"FCFF DCF": 0.45, "P/E": 0.35, "EV/EBIT": 0.20}, "method_medians": {"FCFF DCF": 4000.0, "P/E": 3600.0, "EV/EBIT": 3500.0}}
+
+    ai_exp = generate_ai_explanation(master, market, financials, sector_metrics, {}, valuation, is_neural=True)
+    assert "verdict_statement" in ai_exp
+    assert "summary_narrative" in ai_exp
+    assert len(ai_exp["factors"]) >= 4
+    assert len(ai_exp["method_contributions"]) == 3
+
+
 if __name__ == "__main__":
     try:
         import pytest

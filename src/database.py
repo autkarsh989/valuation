@@ -450,7 +450,15 @@ def get_all_company_summaries() -> List[Dict[str, Any]]:
         md.close_price, md.market_cap, md.pe_ratio, md.pb_ratio, md.fetched_at, md.is_stale,
         fv.q10, fv.q25, fv.q50, fv.q75, fv.q90, fv.mispricing, fv.classification, fv.confidence_score, fv.status
     FROM company_master cm
-    LEFT JOIN market_data md ON cm.company_id = md.company_id
+    LEFT JOIN (
+        SELECT md1.*
+        FROM market_data md1
+        INNER JOIN (
+            SELECT company_id, MAX(fetched_at) as max_fetched
+            FROM market_data
+            GROUP BY company_id
+        ) md2 ON md1.company_id = md2.company_id AND md1.fetched_at = md2.max_fetched
+    ) md ON cm.company_id = md.company_id
     LEFT JOIN final_valuation fv ON cm.company_id = fv.company_id
     ORDER BY cm.sector, cm.common_name
     """)
@@ -585,7 +593,15 @@ def get_all_model_company_summaries() -> List[Dict[str, Any]]:
         mv.q10, mv.q25, mv.q50, mv.q75, mv.q90, mv.mispricing, mv.classification, mv.confidence_score, mv.status,
         mv.weights_applied
     FROM company_master cm
-    LEFT JOIN market_data md ON cm.company_id = md.company_id
+    LEFT JOIN (
+        SELECT md1.*
+        FROM market_data md1
+        INNER JOIN (
+            SELECT company_id, MAX(fetched_at) as max_fetched
+            FROM market_data
+            GROUP BY company_id
+        ) md2 ON md1.company_id = md2.company_id AND md1.fetched_at = md2.max_fetched
+    ) md ON cm.company_id = md.company_id
     LEFT JOIN model_valuation mv ON cm.company_id = mv.company_id
     ORDER BY cm.sector, cm.common_name
     """)

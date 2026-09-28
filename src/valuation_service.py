@@ -14,6 +14,7 @@ from src.data_fetcher import fetch_and_store_company_data, fetch_all_companies_d
 from src.classification import resolve_classification_and_eligibility
 from src.valuation_models import run_scenarios_for_company, generate_sensitivity_matrix
 from src.ensemble_engine import compute_ensemble_valuation, compute_weighted_ensemble_valuation
+from src.explanation_engine import generate_ai_explanation
 
 logger = logging.getLogger("valuation_service")
 
@@ -64,6 +65,8 @@ def run_valuation_for_company(symbol: str, force_refresh: bool = False) -> Dict[
         vetoed_methods=vetoed_methods
     )
 
+    ai_exp = generate_ai_explanation(master, market, fin, sm, scenarios, ensemble, is_neural=False)
+
     return {
         "company": master,
         "market": market,
@@ -77,7 +80,8 @@ def run_valuation_for_company(symbol: str, force_refresh: bool = False) -> Dict[
         "vetoed_methods": vetoed_methods,
         "scenarios": scenarios,
         "sensitivity": sensitivity,
-        "valuation": ensemble
+        "valuation": ensemble,
+        "ai_explanation": ai_exp
     }
 
 def run_valuation_for_all(force_refresh: bool = False) -> List[Dict[str, Any]]:
@@ -133,6 +137,8 @@ def run_neural_valuation_for_company(symbol: str, force_refresh: bool = False) -
         vetoed_methods=vetoed_methods
     )
 
+    ai_exp = generate_ai_explanation(master, market, fin, sm, scenarios, neural_ensemble, is_neural=True)
+
     return {
         "company": master,
         "market": market,
@@ -146,7 +152,8 @@ def run_neural_valuation_for_company(symbol: str, force_refresh: bool = False) -
         "vetoed_methods": vetoed_methods,
         "scenarios": scenarios,
         "sensitivity": sensitivity,
-        "valuation": neural_ensemble
+        "valuation": neural_ensemble,
+        "ai_explanation": ai_exp
     }
 
 def run_neural_valuation_for_all(force_refresh: bool = False) -> List[Dict[str, Any]]:

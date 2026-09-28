@@ -359,5 +359,8 @@ def generate_sensitivity_matrix(
     return {
         "wacc_headers": [f"{w*100:.1f}%" for w in wacc_steps],
         "g_headers": [f"{g*100:.1f}%" for g in g_steps],
-        "matrix": matrix
+        "matrix": matrix,
+        "normal_case": {"row": 2, "col": 2, "wacc": f"{wacc_steps[2]*100:.1f}%", "g": f"{g_steps[2]*100:.1f}%", "val": matrix[2][2]},
+        "downside_case": {"row": 4, "col": 0, "wacc": f"{wacc_steps[4]*100:.1f}%", "g": f"{g_steps[0]*100:.1f}%", "val": matrix[4][0]},
+        "upside_case": {"row": 0, "col": 4, "wacc": f"{wacc_steps[0]*100:.1f}%", "g": f"{g_steps[4]*100:.1f}%", "val": matrix[0][4]}
     }
