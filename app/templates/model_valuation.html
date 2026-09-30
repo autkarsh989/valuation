@@ -401,7 +401,7 @@
 
         async function loadCompanies() {
             try {
-                const res = await fetch("/api/companies");
+                const res = await fetch("/api/companies/model-valuation");
                 const data = await res.json();
                 allCompanies = data.companies || [];
                 updateKPIs(data.stats || {});
@@ -734,7 +734,7 @@
             `;
 
             try {
-                const res = await fetch(`/api/company/${symbol}`);
+                const res = await fetch(`/api/company/${symbol}/model-valuation`);
                 const data = await res.json();
                 activeModalData = data;
                 renderDetailModal(data);
@@ -1113,7 +1113,7 @@
 
         async function refreshSingleCompany(symbol) {
             try {
-                const res = await fetch(`/api/company/${symbol}/refresh`, { method: "POST" });
+                const res = await fetch(`/api/company/${symbol}/model-valuation/refresh`, { method: "POST" });
                 const data = await res.json();
                 activeModalData = data.data;
                 renderDetailModal(data.data);
@@ -1129,7 +1129,7 @@
             btn.innerHTML = `<i class="fa-solid fa-spin fa-circle-notch"></i> <span>Recalculating 20 AI Valuations...</span>`;
 
             try {
-                await fetch("/api/refresh-all", { method: "POST" });
+                await fetch("/api/refresh-all/model-valuation", { method: "POST" });
                 await loadCompanies();
             } catch (err) {
                 alert("Bulk refresh failed");
